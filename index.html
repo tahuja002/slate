@@ -219,6 +219,17 @@
 </ul>
 
 <p>Both of these return a jQuery Deferred object which you can register a success callback to process the returned FHIR resource.</p>
+
+<p>Following operations available in <a href="https://github.com/FHIR/fhir.js">fhir.js</a> are supported:</p>
+
+<ul>
+<li><em>read</em> Read the current state of a given resource</li>
+<li><em>search</em> Obtain a resource bundle matching specific search criteria</li>
+<li><em>fetchAll</em> Retrieve the complete set of resources matching specific search criteria
+and many others</li>
+</ul>
+
+<p>Please see the fhir.js documentation for the complete list of available operations.</p>
 <pre class="highlight javascript"><code><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nb">window</span><span class="p">){</span>
   <span class="nb">window</span><span class="p">.</span><span class="nx">extractData</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
     <span class="kd">var</span> <span class="nx">ret</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Deferred</span><span class="p">();</span>
@@ -301,6 +312,26 @@
 <h1 id="test">Test</h1>
 
 <p>Commit your changes and hit the link mentioned in the email https://APP_URL/launch.html?iss=ABC&amp;launch=XYZ. You should see your index.html page with Patient demographics in it</p>
+
+<h1 id="reading-a-single-resource">Reading a single resource</h1>
+
+<p>Instance-level operations in FHIR work with a single resource instance at a time. Two key operations are read and vread:</p>
+
+<ul>
+<li><em>smart.api.read({type: resourceType, id: resourceId})</em> Read the current state of a given resource</li>
+<li><em>smart.api.vread({type: resourceType, id: resourceId, versionId: versionId})</em> Read a specific version of a given resource</li>
+</ul>
+
+<p>Just change resourceType to the name of a FHIR resource from this complete list.</p>
+
+<h1 id="searching-for-resources">Searching for resources</h1>
+
+<p>To search for resources you’ll use either:</p>
+
+<ul>
+<li><p><em>smart.api.search({type: resourceType, query: queryObject})</em> when you want to search across patients, or</p></li>
+<li><p><em>smart.patient.api.search({type: resourceType, query: queryObject})</em> when you only want results for the patient in context.</p></li>
+</ul>
 
       </div>
       <div class="dark-box">
