@@ -1,196 +1,189 @@
 ---
-title: SMART on FHIR Starter APP
+title: API Reference
 
 language_tabs:
+  - shell
+  - ruby
+  - python
   - javascript
+
+toc_footers:
+  - <a href='#'>Sign Up for a Developer Key</a>
+  - <a href='https://github.com/tripit/slate'>Documentation Powered by Slate</a>
+
+includes:
+  - errors
 
 search: true
 ---
 
 # Introduction
 
-This document will help you get started on how to use SMART on FHIR API to create your app with CERNER
+Welcome to the Kittn API! You can use our API to access Kittn API endpoints, which can get information on various cats, kittens, and breeds in our database.
 
-# Project Set up
-Create your project on any hosting platform and create following files:
+We have language bindings in Shell, Ruby, and Python! You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.
 
-* launch.html 
-* index.html 
-* load_data.js and 
-* lib folder
+This example API documentation page was created with [Slate](https://github.com/tripit/slate). Feel free to edit it and use it as a base for your own API's documentation.
 
-# Download fhir-client.js
-Download [**fhir-client.js**](https://github.com/smart-on-fhir/client-js/blob/master/dist/fhir-client.js) and place it under lib folder. This is the open source FHIR javascript library which would help us with OAUTH2 transactions.
+# Authentication
 
-The SMART on FHIR JavaScript client library helps you build browser-based SMART apps that interact with a FHIR REST API server. It can help your app get authorization tokens, provide information about the user and patient record in context, and issue API calls to fetch clinical data. This tutorial will lead you through the basics of building a SMART app using the JavaScript client.
+> To authorize, use this code:
 
-The SMART JS client uses the open-source fhir.js for interfacing with SMART API servers. Upon successfully initializing and negotiating the SMART authorization sequence, the client will expose one or two instances of the fhir.js client as applicable via the following handles :
+```ruby
+require 'kittn'
 
-* *smart.api* Non-context aware API for executing operations on all authorized resources
-* *smart.patient.api* Context aware API which automatically applies its operations to the patient in context
+api = Kittn::APIClient.authorize!('meowmeowmeow')
+```
 
-# Register APP
-Once we have this done and hosted our APP, we will now register our APP with CERNER. Go to the link [FHIR Application Authorization Request](http://www.cerner.com/FHIR_Application_Authorization_Request/). and fill up following details
+```python
+import kittn
 
-Field | Description
+api = kittn.authorize('meowmeowmeow')
+```
+
+```shell
+# With shell, you can just pass the correct header with each request
+curl "api_endpoint_here"
+  -H "Authorization: meowmeowmeow"
+```
+
+```javascript
+const kittn = require('kittn');
+
+let api = kittn.authorize('meowmeowmeow');
+```
+
+> Make sure to replace `meowmeowmeow` with your API key.
+
+Kittn uses API keys to allow access to the API. You can register a new Kittn API key at our [developer portal](http://example.com/developers).
+
+Kittn expects for the API key to be included in all API requests to the server in a header that looks like the following:
+
+`Authorization: meowmeowmeow`
+
+<aside class="notice">
+You must replace <code>meowmeowmeow</code> with your personal API key.
+</aside>
+
+# Kittens
+
+## Get All Kittens
+
+```ruby
+require 'kittn'
+
+api = Kittn::APIClient.authorize!('meowmeowmeow')
+api.kittens.get
+```
+
+```python
+import kittn
+
+api = kittn.authorize('meowmeowmeow')
+api.kittens.get()
+```
+
+```shell
+curl "http://example.com/api/kittens"
+  -H "Authorization: meowmeowmeow"
+```
+
+```javascript
+const kittn = require('kittn');
+
+let api = kittn.authorize('meowmeowmeow');
+let kittens = api.kittens.get();
+```
+
+> The above command returns JSON structured like this:
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Fluffums",
+    "breed": "calico",
+    "fluffiness": 6,
+    "cuteness": 7
+  },
+  {
+    "id": 2,
+    "name": "Max",
+    "breed": "unknown",
+    "fluffiness": 5,
+    "cuteness": 10
+  }
+]
+```
+
+This endpoint retrieves all kittens.
+
+### HTTP Request
+
+`GET http://example.com/api/kittens`
+
+### Query Parameters
+
+Parameter | Default | Description
+--------- | ------- | -----------
+include_cats | false | If set to true, the result will also include cats.
+available | true | If set to false, the result will include kittens that have already been adopted.
+
+<aside class="success">
+Remember — a happy kitten is an authenticated kitten!
+</aside>
+
+## Get a Specific Kitten
+
+```ruby
+require 'kittn'
+
+api = Kittn::APIClient.authorize!('meowmeowmeow')
+api.kittens.get(2)
+```
+
+```python
+import kittn
+
+api = kittn.authorize('meowmeowmeow')
+api.kittens.get(2)
+```
+
+```shell
+curl "http://example.com/api/kittens/2"
+  -H "Authorization: meowmeowmeow"
+```
+
+```javascript
+const kittn = require('kittn');
+
+let api = kittn.authorize('meowmeowmeow');
+let max = api.kittens.get(2);
+```
+
+> The above command returns JSON structured like this:
+
+```json
+{
+  "id": 2,
+  "name": "Max",
+  "breed": "unknown",
+  "fluffiness": 5,
+  "cuteness": 10
+}
+```
+
+This endpoint retrieves a specific kitten.
+
+<aside class="warning">Inside HTML code blocks like this one, you can't use Markdown, so use <code>&lt;code&gt;</code> blocks to denote code.</aside>
+
+### HTTP Request
+
+`GET http://example.com/kittens/<ID>`
+
+### URL Parameters
+
+Parameter | Description
 --------- | -----------
-Application Name | Any name for your APP you want to give
-Redirect URL | Just put your base app url. Like https://app_url/
-Email Address | Your email address to get the details for client id
-Logo URL | 
-SMART Launch URL | URL to the launch.html file . Like https://app_url/launch.html
-Scope Required | Select User-Specific Scope. Select online_access, launch, openid, profile and Patient.read
-FHIR version | Select DSTU Final
-
-and click Submit. This will send request to CERNER FHIR group for them to create client id for the app authorization.
-
-After this you will receive an email stating what your Client ID and Launch URL is.
-
-# Initializing the client
-Before you are able to run any operations against the FHIR API using the JS client, you will need to initialize it first.
-
-```javascript
-<html lang="en">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>SMART on FHIR Starter APP</title>
-    <script src="./lib/fhir-client.js"></script>
-    <script>
-      FHIR.oauth2.authorize({
-        "client_id": "CLIENT_ID",
-        "scope":  "patient/Patient.read launch"
-      });
-    </script>
-  </head>
-  Loading...
-</html>
-```
-
-> Make sure to replace CLIENT_ID with the client id provided in the email.
-
-# Obtaining the context
-Once the client is initialized, you can obtain the context in which it was launched (the user who authorized the client and, if applicable, the patient that has been selected) by using the following methods:
-
-* *smart.user.read()*
-* *smart.patient.read()*
-	
-Both of these return a jQuery Deferred object which you can register a success callback to process the returned FHIR resource.
-
-
-Following operations available in [fhir.js](https://github.com/FHIR/fhir.js) are supported:
-
-* *read* Read the current state of a given resource
-* *search* Obtain a resource bundle matching specific search criteria
-* *fetchAll* Retrieve the complete set of resources matching specific search criteria
-and many others
-
-Please see the fhir.js documentation for the complete list of available operations.
-
-
-```javascript
-(function(window){
-  window.extractData = function() {
-    var ret = $.Deferred();
-
-    FHIR.oauth2.ready(function(smart){
-      var patient = smart.patient;
-      var pt = patient.read();
-
-      $.when(pt).done(function(patient){
-         var gender = patient.gender;
-         var dob = new Date(patient.birthDate);
-         var fname = patient.name[0].given.join(" ");
-         var lname = patient.name[0].family.join(" ");
-
-          p = defaultPatient();
-          p.birthday = {value:dob};
-          p.gender={value:gender};
-          p.givenName={value:fname};
-          p.familyName={value:lname};
-
-          ret.resolve(p);
-      });
-    });
-    return ret.promise();
-  };
-
-
-  function defaultPatient(){
-    return {
-      'givenName':    {'value': null}
-      ,'familyName':  {'value': null}
-      ,'gender':      {'value': null}
-      ,'birthday':    {'value': null}
-    }
-  };
-
-
-})(window);
-```
-
-# Displaying the Resource
-```javascript
-<!DOCTYPE html>
-<html>
-
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>SMART ON FHIR STARTER APP</title>
-
-   <script src="./lib/fhir-client.js"></script>
-    <script src='./load_data.js'></script>
-    <script src='./lib/jquery.min.js'></script>
-
-    <script>
-      extractData().then(function(p){
-
-          var table = '<table><thead><th>First Name</th><th>Last Name</th><th>Gender</th><th>Birth Date</th></thead><tbody>';
-          table += '<tr>';                      
-          table += '<td>' + p.givenName.value + '</td>';
-          table += '<td>' + p.familyName.value + '</td>';
-          table += '<td>' + p.gender.value + '</td>';
-          table += '<td>' + p.birthday.value + '</td>';
-          table += '</tr>';
-          table += '</tbody></table>';
-          $( '#holder').html(table);         
-
-      });
-
-    </script>
-  </head>
-  <body style="margin: none;">
-    <h1>SMART on FHIR STARTER APP ( PATIENT DEMOGRAPHICS)</h1>
-    <div id='holder' style='display: none;'>
-    </div>
-
-  </body>
-</html>
-```
-
-# Test
-Commit your changes and hit the link mentioned in the email https://APP_URL/launch.html?iss=ABC&launch=XYZ. You should see your index.html page with Patient demographics in it
-
-# Reading a single resource
-
-Instance-level operations in FHIR work with a single resource instance at a time. Two key operations are read and vread:
-
-* *smart.api.read({type: resourceType, id: resourceId})* Read the current state of a given resource
-* *smart.api.vread({type: resourceType, id: resourceId, versionId: versionId})* Read a specific version of a given resource
-
-Just change resourceType to the name of a FHIR resource from this complete list.
-
-# Searching for resources
-
-To search for resources you’ll use either:
-
-* *smart.api.search({type: resourceType, query: queryObject})* when you want to search across patients, or
-
-* *smart.patient.api.search({type: resourceType, query: queryObject})* when you only want results for the patient in context.
-
-
-
-
-
+ID | The ID of the kitten to retrieve
 
