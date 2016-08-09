@@ -16,7 +16,8 @@ Create your project on any hosting platform and create following files:
 
 * launch.html 
 * index.html 
-* load_data.js and 
+* load_data.js 
+* draw_visualization.js and 
 * lib folder
 
 # Download fhir-client.js
@@ -50,20 +51,23 @@ After this you will receive an email stating what your Client ID and Launch URL 
 Before you are able to run any operations against the FHIR API using the JS client, you will need to initialize it first.
 
 ```javascript
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>SMART on FHIR Starter APP</title>
+    <title>SMART on FHIR Starter APP</title>    
+  </head>
+  Loading...
+  <body>
     <script src="./lib/fhir-client.js"></script>
     <script>
       FHIR.oauth2.authorize({
-        "client_id": "CLIENT_ID",
-        "scope":  "patient/Patient.read launch"
+        'client_id': 'df7c5a17-52dd-4c88-8a32-cdfb557ba758',
+        'scope':  'patient/Patient.read launch online_access openid profile'
       });
     </script>
-  </head>
-  Loading...
+  </body>
 </html>
 ```
 
@@ -87,85 +91,140 @@ and many others
 
 Please see the fhir.js documentation for the complete list of available operations.
 
-
 ```javascript
 (function(window){
   window.extractData = function() {
-    var ret = $.Deferred();
+    const ret = $.Deferred();
+    
+    function isLeapYear(year) {
+      return new Date(year, 1, 29).getMonth() === 1;
+    }
 
-    FHIR.oauth2.ready(function(smart){
-      var patient = smart.patient;
-      var pt = patient.read();
+    function calculateAge(date) {
+      const d = new Date(date), now = new Date();
+      let years = now.getFullYear() - d.getFullYear();
+      d.setFullYear(d.getFullYear() + years);
+      if (d > now) {
+          years--;
+          d.setFullYear(d.getFullYear() - 1);
+      }
+      const days = (now.getTime() - d.getTime()) / (3600 * 24 * 1000);
+      return years + days / (isLeapYear(now.getFullYear()) ? 366 : 365);
+    }
 
-      $.when(pt).done(function(patient){
-         var gender = patient.gender;
-         var dob = new Date(patient.birthDate);
-         var fname = patient.name[0].given.join(" ");
-         var lname = patient.name[0].family.join(" ");
+  
+    function defaultPatient() {
+      return {
+       'fname' : {'value': null},
+       'lname' : {'value': null},
+       'gender' : {'value': null},
+       'birthday' : {'value': null},
+       'age' : {'value': null}
+      };
+    }
 
-          p = defaultPatient();
-          p.birthday = {value:dob};
-          p.gender={value:gender};
-          p.givenName={value:fname};
-          p.familyName={value:lname};
+    function onError() {
+      console.log('Loading error', arguments);
+      ret.reject();
+    }
 
+    function onReady(smart)  {
+      if (smart.hasOwnProperty('patient')) { 
+        const patient = smart.patient;
+        const pt = patient.read();
+        
+        $.when(pt).fail(onError);
+
+        $.when(pt).done(function(patient) {
+          const gender = patient.gender;
+          const dob = new Date(patient.birthDate);     
+          const day = dob.getDate(); 
+          const monthIndex = dob.getMonth() + 1;
+          const year = dob.getFullYear();
+
+          const dobStr = monthIndex + '/' + day + '/' + year;
+          
+          const fname = patient.name[0].given.join(' ');
+          const lname = patient.name[0].family.join(' ');
+          const age = parseInt(calculateAge(dob));
+          
+          let p = defaultPatient();
+          p.birthday = {value:dobStr};
+          p.gender = {value:gender};
+          p.fname = {value:fname};
+          p.lname = {value:lname};
+          p.age = {value:age};
           ret.resolve(p);
-      });
-    });
+        });
+      } else { 
+        onError();
+      }
+      
+    
+      
+    }
+
+    FHIR.oauth2.ready(onReady, onError);
+
     return ret.promise();
   };
-
-
-  function defaultPatient(){
-    return {
-      'givenName':    {'value': null}
-      ,'familyName':  {'value': null}
-      ,'gender':      {'value': null}
-      ,'birthday':    {'value': null}
-    }
-  };
-
-
+  
 })(window);
 ```
 
 # Displaying the Resource
+
+We will put the display logic in draw_visualization.js file. Here is what it should look it
+>draw_visualization.js
+
+```javascript
+function drawVisualization(p) { 
+    let table = '<table><thead><th>First Name</th><th>Last Name</th><th>Gender</th><th>Birth Date</th><th>Age</th></thead><tbody>';
+    table += '<tr>';            
+    table += '<td>' + p.fname.value + '</td>';
+    table += '<td>' + p.lname.value + '</td>';
+    table += '<td>' + p.gender.value + '</td>';
+    table += '<td>' + p.birthday.value + '</td>';
+    table += '<td>' + p.age.value + '</td>';
+    table += '</tr>';
+    table += '</tbody></table>';
+    $('#holder').html(table);  
+}
+```
+>index.html
+
 ```javascript
 <!DOCTYPE html>
-<html>
-
+<html>  
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>SMART ON FHIR STARTER APP</title>
-
-   <script src="./lib/fhir-client.js"></script>
-    <script src='./load_data.js'></script>
-    <script src='./lib/jquery.min.js'></script>
-
-    <script>
-      extractData().then(function(p){
-
-          var table = '<table><thead><th>First Name</th><th>Last Name</th><th>Gender</th><th>Birth Date</th></thead><tbody>';
-          table += '<tr>';                      
-          table += '<td>' + p.givenName.value + '</td>';
-          table += '<td>' + p.familyName.value + '</td>';
-          table += '<td>' + p.gender.value + '</td>';
-          table += '<td>' + p.birthday.value + '</td>';
-          table += '</tr>';
-          table += '</tbody></table>';
-          $( '#holder').html(table);         
-
-      });
-
-    </script>
+    <title>SMART STARTER APP</title>    
   </head>
   <body style="margin: none;">
-    <h1>SMART on FHIR STARTER APP ( PATIENT DEMOGRAPHICS)</h1>
-    <div id='holder' style='display: none;'>
+    <h2>SMART STARTER APP ( PATIENT DEMOGRAPHICS )</h2>
+    <div id='errors'>
     </div>
-
+    <div id='holder'>
+    </div>
+   
   </body>
+  <script src="./lib/fhir-client.js"></script>
+  <script src='./load_data.js'></script>
+  <script src='./lib/jquery.min.js'></script>
+  <script src='./draw_visualization.js'></script>
+  <script>
+      extractData().then(
+        function(p) {          
+          drawVisualization(p);
+        }, 
+
+        function() {
+          $('#errors').html('<p> Failed to call FHIR Service </p>');
+        }
+      );
+
+  </script>
 </html>
 ```
 
