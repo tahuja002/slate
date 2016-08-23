@@ -16,7 +16,11 @@ Create your project on any hosting platform and create following files:
 
 * launch.html 
 * index.html 
-* src/load_data.js 
+* src/index.js 
+* src/starter_app.js 
+* src/patient.js 
+* src/observation.js 
+* src/util.js 
 * src/draw_visualization.js and 
 * lib folder
 * dist folder ( we will use this folder to keep our ES5 code )
@@ -92,51 +96,42 @@ and many others
 
 Please see the fhir.js documentation for the complete list of available operations.
 
+> starter_app.js
+
 ```javascript
-(function(window){
-  window.extractData = function() {
-    const ret = $.Deferred();
+/*jshint esversion: 6 */
+import Util from './util';
+import Patient from './patient';
+
+class StarterApp {
+  static extractData() {
+   
+    const ret = $.Deferred();     
     
-    function isLeapYear(year) {
-      return new Date(year, 1, 29).getMonth() === 1;
-    }
-
-    function calculateAge(date) {
-      const d = new Date(date), now = new Date();
-      let years = now.getFullYear() - d.getFullYear();
-      d.setFullYear(d.getFullYear() + years);
-      if (d > now) {
-          years--;
-          d.setFullYear(d.getFullYear() - 1);
-      }
-      const days = (now.getTime() - d.getTime()) / (3600 * 24 * 1000);
-      return years + days / (isLeapYear(now.getFullYear()) ? 366 : 365);
-    }
-
-  
-    function defaultPatient() {
-      return {
-       'fname' : {'value': null},
-       'lname' : {'value': null},
-       'gender' : {'value': null},
-       'birthday' : {'value': null},
-       'age' : {'value': null}
-      };
-    }
-
     function onError() {
       console.log('Loading error', arguments);
       ret.reject();
-    }
+    }     
 
     function onReady(smart)  {
       if (smart.hasOwnProperty('patient')) { 
         const patient = smart.patient;
         const pt = patient.read();
+        const obv = smart.patient.api.fetchAll({
+                      type: 'Observation', 
+                      query: {
+                        code: {
+                          $or: ['http://loinc.org|8302-2', 'http://loinc.org|8462-4',
+                                'http://loinc.org|8480-6', 'http://loinc.org|2085-9',
+                                'http://loinc.org|2089-1']
+                              }
+                             }
+                    });
         
-        $.when(pt).fail(onError);
+        $.when(pt, obv).fail(onError);
 
-        $.when(pt).done(function(patient) {
+        $.when(pt, obv).done(function(patient, obv) {
+          const byCodes = smart.byCodes(obv, 'code');
           const gender = patient.gender;
           const dob = new Date(patient.birthDate);     
           const day = dob.getDate(); 
@@ -147,75 +142,155 @@ Please see the fhir.js documentation for the complete list of available operatio
           
           const fname = patient.name[0].given.join(' ');
           const lname = patient.name[0].family.join(' ');
-          const age = parseInt(calculateAge(dob));
           
-          let p = defaultPatient();
-          p.birthday = {value:dobStr};
-          p.gender = {value:gender};
-          p.fname = {value:fname};
-          p.lname = {value:lname};
-          p.age = {value:age};
+          const height = byCodes('8302-2');
+          const systolicbp = byCodes('8480-6');
+          const diastolicbp = byCodes('8462-4');
+          const hdl = byCodes('2085-9');
+          const ldl = byCodes('2089-1');
+
+          let p = new Patient();          
+          p.birthday = dobStr;
+          p.gender = gender;
+          p.fname = fname;
+          p.lname = lname;
+          p.age = parseInt(Util.calculateAge(dob));
+
+          if(typeof height[0] !== 'undefined') {
+            p.obv.height = height[0].valueQuantity.value;
+          }
+          
+          if(typeof systolicbp[0] !== 'undefined') {
+            p.obv.systolicbp = systolicbp[0].valueQuantity.value;
+          }
+
+          if(typeof diastolicbp[0] !== 'undefined') {
+            p.obv.diastolicbp = diastolicbp[0].valueQuantity.value;
+          }
+          
+          if(typeof hdl[0] !== 'undefined') {
+            p.obv.hdl = hdl[0].valueQuantity.value;
+          }
+
+          if(typeof ldl[0] !== 'undefined') {
+            p.obv.ldl = ldl[0].valueQuantity.value;
+          }
           ret.resolve(p);
         });
       } else { 
         onError();
       }
       
-    
-      
     }
 
     FHIR.oauth2.ready(onReady, onError);
 
     return ret.promise();
-  };
-  
-})(window);
+  }
+}
+
+export default StarterApp;
+
 ```
+
+> index.js
+
+```javascript
+import StarterApp from './starter_app';
+
+window.StarterApp = StarterApp;
+```
+
+> util.js
+
+```javascript
+/*jshint esversion: 6 */
+class Util{
+  static isLeapYear(year) {
+    return new Date(year, 1, 29).getMonth() === 1;
+  }
+
+  static calculateAge(date) {
+    if (Object.prototype.toString.call(date) === '[object Date]' && !isNaN(date.getTime())) {
+      const d = new Date(date), now = new Date();
+      let years = now.getFullYear() - d.getFullYear();
+      d.setFullYear(d.getFullYear() + years);
+      if (d > now) {
+        years--;
+        d.setFullYear(d.getFullYear() - 1);
+      }
+      const days = (now.getTime() - d.getTime()) / (3600 * 24 * 1000);
+      return years + days / (this.isLeapYear(now.getFullYear()) ? 366 : 365);
+    }
+    else {
+      return undefined;
+    }
+    
+  }
+}
+
+export default Util;
+```
+
+> patient.js
+
+```javascript
+/*jshint esversion: 6 */
+import Observations from './observations';
+
+class Patient {  
+  constructor() {
+    this.fname = '';
+    this.lname = '';
+    this.gender = '';
+    this.birthday = '';
+    this.age = '';
+    this.obv = new Observations();
+  }
+}
+
+export default Patient;
+```
+
+> observation.js
+
+```javascript
+/*jshint esversion: 6 */
+class Observations {  
+  constructor() {
+    this.height = '';
+    this.systolicbp = '';
+    this.diastolicbp = '';
+    this.ldl = '';
+    this.hdl = '';
+  }
+}
+
+export default Observations;
+```
+
 # Transpiling the ES6 code to ES5 code
-We will bable to transpile out ES6 code in src folder to ES5 code in dist folder
-
-* **Install bable-cli**
-
-  While you can install Babel CLI globally on your machine, it’s much better to install it locally project by project.
-
-  There are two primary reasons for this.
-
-  1. Different projects on the same machine can depend on different versions of Babel allowing you to update one at a time.
-
-  2. It means you do not have an implicit dependency on the environment you are working in. Making your project far more portable and easier to setup.
-
-  We can install Babel CLI locally by running:
-
-  *$ npm install --save-dev babel-cli*
-
-* **Install ES5 presets**
-
-  Pre-6.x, Babel enabled certain transformations by default. However, Babel 6.x does not ship with any transformations enabled. You need to explicitly tell it what transformations to run. The simplest way to do this is by using a preset, such as the ES2015 Preset. You can install it with
-
-  *npm install babel-preset-es2015 --save-dev*
-
-* **Run bable on src folder javascripts**
-
-  *./node_modules/.bin/babel src -d lib*
+We will use bable to transpile out ES6 code in src folder to ES5 code in dist folder
 
 # Displaying the Resource
 
-We will put the display logic in draw_visualization.js file. Here is what it should look it
+We will put the display logic in draw_visualization.js file. Here is what it should look like
 >draw_visualization.js
 
 ```javascript
+/*jshint esversion: 6 */
 function drawVisualization(p) { 
-    let table = '<table><thead><th>First Name</th><th>Last Name</th><th>Gender</th><th>Birth Date</th><th>Age</th></thead><tbody>';
-    table += '<tr>';            
-    table += '<td>' + p.fname.value + '</td>';
-    table += '<td>' + p.lname.value + '</td>';
-    table += '<td>' + p.gender.value + '</td>';
-    table += '<td>' + p.birthday.value + '</td>';
-    table += '<td>' + p.age.value + '</td>';
-    table += '</tr>';
-    table += '</tbody></table>';
-    $('#holder').html(table);  
+  $('#holder').show();
+  $('#fname').html(p.fname);
+  $('#lname').html(p.lname);
+  $('#gender').html(p.gender);
+  $('#birthday').html(p.birthday);  
+  $('#age').html(p.age);
+  $('#height').html(p.obv.height);
+  $('#systolicbp').html(p.obv.systolicbp);
+  $('#diastolicbp').html(p.obv.diastolicbp);
+  $('#ldl').html(p.obv.ldl);
+  $('#hdl').html(p.obv.hdl);
 }
 ```
 >index.html
@@ -224,35 +299,86 @@ function drawVisualization(p) {
 <!DOCTYPE html>
 <html>  
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
+    <meta http-equiv='X-UA-Compatible' content='IE=edge' />
     <title>SMART STARTER APP</title>    
+  
+    <link rel='stylesheet' type='text/css' href='./dist/css/starter_app.min.css'>
   </head>
-  <body style="margin: none;">
-    <h2>SMART STARTER APP ( PATIENT DEMOGRAPHICS )</h2>
+  <body style='margin: none;'>
+    <h2>SMART STARTER APP</h2>
     <div id='errors'>
     </div>
-    <div id='holder'>
-    </div>
-   
+    <div id='holder' style='display:none;'>
+
+      <h2>Patient Resource</h2>
+      <table>
+        <tr>
+          <th>First Name:</th>
+          <td id='fname'></td>            
+        </tr>
+        <tr>
+          <th>Last Name:</th>
+          <td id='lname'></td>
+        </tr>
+        <tr>
+          <th>Gender:</th>
+          <td id='gender'></td>          
+        </tr>
+        <tr>
+          <th>Date of Birth:</th>
+          <td id='birthday'></td>            
+        </tr>
+        <tr>
+          <th>Age:</th>
+          <td id='age'></td>            
+        </tr>       
+      </table>
+
+
+      <h2>Observation Resource</h2>
+      <table>
+        <tr>
+          <th>Height:</th>          
+          <td id='height'></td>            
+        </tr>
+        <tr>
+          <th>Systolic Blood Pressure:</th>
+          <td id='systolicbp'></td>
+            
+        </tr>
+        <tr>
+          <th>Diastolic Blood Pressure:</th>
+          <td id='diastolicbp'></td>
+        </tr>
+        <tr>
+          <th>LDL:</th>
+          <td id='ldl'></td>
+        </tr>
+        <tr>
+          <th>HDL:</th>
+          <td id='hdl'></td>
+        </tr>
+      </table>
+    </div>   
   </body>
-  <script src="./lib/fhir-client.js"></script>
-  <script src='./dist/load_data.js'></script>
+  <script src='./lib/fhir-client.js'></script>
+  <script src='./dist/js/starter_app.min.js'></script>
   <script src='./lib/jquery.min.js'></script>
-  <script src='./dist/draw_visualization.js'></script>
+  <script src='./dist/js/draw_visualization.js'></script>
   <script>
-      extractData().then(
-        function(p) {          
-          drawVisualization(p);
-        }, 
+    StarterApp.extractData().then(
+      function(p) {          
+        drawVisualization(p);
+      }, 
 
-        function() {
-          $('#errors').html('<p> Failed to call FHIR Service </p>');
-        }
-      );
-
+      function() {
+        $('#errors').html('<p> Failed to call FHIR Service </p>');
+      }
+    );
   </script>
 </html>
+
 ```
 
 # Test
