@@ -16,9 +16,10 @@ Create your project on any hosting platform and create following files:
 
 * launch.html 
 * index.html 
-* load_data.js 
-* draw_visualization.js and 
+* src/load_data.js 
+* src/draw_visualization.js and 
 * lib folder
+* dist folder ( we will use this folder to keep our ES5 code )
 
 # Download fhir-client.js
 Download [**fhir-client.js**](https://github.com/smart-on-fhir/client-js/blob/master/dist/fhir-client.js) and place it under lib folder. This is the open source FHIR javascript library which would help us with OAUTH2 transactions.
@@ -171,6 +172,32 @@ Please see the fhir.js documentation for the complete list of available operatio
   
 })(window);
 ```
+# Transpiling the ES6 code to ES5 code
+We will bable to transpile out ES6 code in src folder to ES5 code in dist folder
+
+* **Install bable-cli**
+
+  While you can install Babel CLI globally on your machine, it’s much better to install it locally project by project.
+
+  There are two primary reasons for this.
+
+  1. Different projects on the same machine can depend on different versions of Babel allowing you to update one at a time.
+
+  2. It means you do not have an implicit dependency on the environment you are working in. Making your project far more portable and easier to setup.
+
+  We can install Babel CLI locally by running:
+
+  *$ npm install --save-dev babel-cli*
+
+* **Install ES5 presets**
+
+  Pre-6.x, Babel enabled certain transformations by default. However, Babel 6.x does not ship with any transformations enabled. You need to explicitly tell it what transformations to run. The simplest way to do this is by using a preset, such as the ES2015 Preset. You can install it with
+
+  *npm install babel-preset-es2015 --save-dev*
+
+* **Run bable on src folder javascripts**
+
+  *./node_modules/.bin/babel src -d lib*
 
 # Displaying the Resource
 
@@ -210,9 +237,9 @@ function drawVisualization(p) {
    
   </body>
   <script src="./lib/fhir-client.js"></script>
-  <script src='./load_data.js'></script>
+  <script src='./dist/load_data.js'></script>
   <script src='./lib/jquery.min.js'></script>
-  <script src='./draw_visualization.js'></script>
+  <script src='./dist/draw_visualization.js'></script>
   <script>
       extractData().then(
         function(p) {          
