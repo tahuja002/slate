@@ -147,9 +147,9 @@
 <li><em>smart.patient.api</em> Context aware API which automatically applies its operations to the patient in context</li>
 </ul>
 
-<h1 id="register-app">Register APP</h1>
+<h1 id="registering-smart-app">Registering SMART APP</h1>
 
-<p>Once we have this done and hosted our APP, we will now register our APP with CERNER. Go to the link <a href="http://www.cerner.com/FHIR_Application_Authorization_Request/">FHIR Application Authorization Request</a>. and fill up following details</p>
+<p>Once we have the SMART App created per the Project Setup step, get the application hosted. Your application is now ready to be registered with CERNER. Go to the link <a href="http://www.cerner.com/FHIR_Application_Authorization_Request/">FHIR Application Authorization Request</a>. and fill up following details</p>
 
 <table><thead>
 <tr>
@@ -193,7 +193,9 @@
 
 <h1 id="initializing-the-client">Initializing the client</h1>
 
-<p>Before you are able to run any operations against the FHIR API using the JS client, you will need to initialize it first.</p>
+<blockquote>
+<p>launch.html</p>
+</blockquote>
 <pre class="highlight javascript"><code><span class="o">&lt;!</span><span class="nx">DOCTYPE</span> <span class="nx">html</span><span class="o">&gt;</span>
 <span class="o">&lt;</span><span class="nx">html</span> <span class="nx">lang</span><span class="o">=</span><span class="s2">"en"</span><span class="o">&gt;</span>
   <span class="o">&lt;</span><span class="nx">head</span><span class="o">&gt;</span>
@@ -206,8 +208,8 @@
     <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">"./lib/fhir-client.js"</span><span class="o">&gt;&lt;</span><span class="sr">/script</span><span class="err">&gt;
 </span>    <span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
       <span class="nx">FHIR</span><span class="p">.</span><span class="nx">oauth2</span><span class="p">.</span><span class="nx">authorize</span><span class="p">({</span>
-        <span class="s1">'client_id'</span><span class="p">:</span> <span class="s1">'df7c5a17-52dd-4c88-8a32-cdfb557ba758'</span><span class="p">,</span>
-        <span class="s1">'scope'</span><span class="p">:</span>  <span class="s1">'patient/Patient.read launch online_access openid profile'</span>
+        <span class="s1">'client_id'</span><span class="p">:</span> <span class="s1">'CLIENT_ID'</span><span class="p">,</span>
+        <span class="s1">'scope'</span><span class="p">:</span>  <span class="s1">'patient/Patient.read Observation.read launch online_access openid profile'</span>
       <span class="p">});</span>
     <span class="o">&lt;</span><span class="sr">/script</span><span class="err">&gt;
 </span>  <span class="o">&lt;</span><span class="sr">/body</span><span class="err">&gt;
@@ -218,27 +220,57 @@
 <p>Make sure to replace CLIENT_ID with the client id provided in the email.</p>
 </blockquote>
 
+<p>Before you are able to run any operations against the FHIR API using the JS client, you will need to initialize it first.</p>
+
+<p>When an EHR user launches your app, you get a “launch request” notification. Just ask for the permissions you need using OAuth scopes like patient/*.read and once you’re authorized you’ll have an access token with the permissions you need – including access to clinical data and context like:</p>
+
+<ul>
+<li>which patient is in-context in the EHR</li>
+<li>which encounter is in-context in the EHR</li>
+<li>the physical location of the EHR user</li>
+</ul>
+
+<p>Below are different scopes we can use.</p>
+
+<table><thead>
+<tr>
+<th>Scope</th>
+<th>Grants</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>patient/*.read</td>
+<td>Permission to read any resource for the current patient</td>
+</tr>
+<tr>
+<td>user/*.*</td>
+<td>Permission to read and write all resources that the current user can access</td>
+</tr>
+<tr>
+<td>openid profile</td>
+<td>Permission to retrieve information about the current logged-in user</td>
+</tr>
+<tr>
+<td>launch</td>
+<td>Permission to obtain launch context when app is launched from an EHR</td>
+</tr>
+<tr>
+<td>launch/patient</td>
+<td>When launching outside the EHR, ask for a patient to be selected at launch time</td>
+</tr>
+<tr>
+<td>offline_access</td>
+<td>Request a refresh_token that can be used to obtain a new access token to replace an expired one, even after the end-user no long is online after the access token rexpires</td>
+</tr>
+<tr>
+<td>online_access</td>
+<td>Request a refresh_token that can be used to obtain a new access token to replace an expired one, and that will be usable for as long as the end-user remains online.</td>
+</tr>
+</tbody></table>
+
+<p>For our APP we will use Patient.read, Observation.read, launch, online_access, openid profile</p>
+
 <h1 id="obtaining-the-context">Obtaining the context</h1>
-
-<p>Once the client is initialized, you can obtain the context in which it was launched (the user who authorized the client and, if applicable, the patient that has been selected) by using the following methods:</p>
-
-<ul>
-<li><em>smart.user.read()</em></li>
-<li><em>smart.patient.read()</em></li>
-</ul>
-
-<p>Both of these return a jQuery Deferred object which you can register a success callback to process the returned FHIR resource.</p>
-
-<p>Following operations available in <a href="https://github.com/FHIR/fhir.js">fhir.js</a> are supported:</p>
-
-<ul>
-<li><em>read</em> Read the current state of a given resource</li>
-<li><em>search</em> Obtain a resource bundle matching specific search criteria</li>
-<li><em>fetchAll</em> Retrieve the complete set of resources matching specific search criteria
-and many others</li>
-</ul>
-
-<p>Please see the fhir.js documentation for the complete list of available operations.</p>
 
 <blockquote>
 <p>starter_app.js</p>
@@ -413,13 +445,31 @@ and many others</li>
 <span class="kr">export</span> <span class="k">default</span> <span class="nx">Observations</span><span class="p">;</span>
 </code></pre>
 
+<p>Once the client is initialized, you can obtain the context in which it was launched (the user who authorized the client and, if applicable, the patient that has been selected) by using the following methods:</p>
+
+<ul>
+<li><em>smart.user.read()</em></li>
+<li><em>smart.patient.read()</em></li>
+</ul>
+
+<p>Both of these return a jQuery Deferred object which you can register a success callback to process the returned FHIR resource.</p>
+
+<p>Following operations available in <a href="https://github.com/FHIR/fhir.js">fhir.js</a> are supported:</p>
+
+<ul>
+<li><em>read</em> Read the current state of a given resource</li>
+<li><em>search</em> Obtain a resource bundle matching specific search criteria</li>
+<li><em>fetchAll</em> Retrieve the complete set of resources matching specific search criteria
+and many others</li>
+</ul>
+
+<p>Please see the fhir.js documentation for the complete list of available operations.</p>
+
 <h1 id="transpiling-the-es6-code-to-es5-code">Transpiling the ES6 code to ES5 code</h1>
 
 <p>We will use bable to transpile out ES6 code in src folder to ES5 code in dist folder</p>
 
 <h1 id="displaying-the-resource">Displaying the Resource</h1>
-
-<p>We will put the display logic in draw_visualization.js file. Here is what it should look like</p>
 
 <blockquote>
 <p>draw_visualization.js</p>
@@ -527,6 +577,8 @@ and many others</li>
 </span><span class="o">&lt;</span><span class="sr">/html</span><span class="err">&gt;
 </span>
 </code></pre>
+
+<p>We will put the display logic in draw_visualization.js file. Here is what it should look like</p>
 
 <h1 id="test">Test</h1>
 
