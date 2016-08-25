@@ -130,13 +130,104 @@
 <li>src/observation.js </li>
 <li>src/util.js </li>
 <li>src/draw_visualization.js and </li>
-<li>lib folder</li>
 <li>dist folder ( we will use this folder to keep our ES5 code )</li>
 </ul>
 
-<h1 id="download-fhir-client-js">Download fhir-client.js</h1>
+<h1 id="install-fhir-client-js">Install fhir-client.js</h1>
 
-<p>Download <a href="https://github.com/smart-on-fhir/client-js/blob/master/dist/fhir-client.js"><strong>fhir-client.js</strong></a> and place it under lib folder. This is the open source FHIR javascript library which would help us with OAUTH2 transactions.</p>
+<blockquote>
+<p>package.json</p>
+</blockquote>
+<pre class="highlight javascript"><code><span class="p">{</span>
+  <span class="s2">"name"</span><span class="err">:</span> <span class="s2">"smart-starter-app"</span><span class="p">,</span>
+  <span class="s2">"version"</span><span class="err">:</span> <span class="s2">"1.0.0"</span><span class="p">,</span>
+  <span class="s2">"author"</span><span class="err">:</span> <span class="s2">"Cerner Corporation, Cloud App Dev Platform"</span><span class="p">,</span>
+  <span class="s2">"description"</span><span class="err">:</span> <span class="s2">"== README"</span><span class="p">,</span>
+  <span class="s2">"main"</span><span class="err">:</span> <span class="s2">"./src/starter_app.js"</span><span class="p">,</span>
+  <span class="s2">"style"</span><span class="err">:</span> <span class="s2">"dist/css/starter_app.css"</span><span class="p">,</span>
+  <span class="s2">"less"</span><span class="err">:</span> <span class="s2">"src/less/manifest.less"</span><span class="p">,</span>
+  <span class="s2">"license"</span><span class="err">:</span> <span class="s2">"== LICENSE"</span><span class="p">,</span>
+  <span class="s2">"homepage"</span><span class="err">:</span> <span class="s2">"https://github.com/parthivbhagat/pb026393.github.io"</span><span class="p">,</span>
+  <span class="s2">"repository"</span><span class="err">:</span> <span class="p">{</span>
+    <span class="s2">"type"</span><span class="err">:</span> <span class="s2">"git"</span><span class="p">,</span>
+    <span class="s2">"url"</span><span class="err">:</span> <span class="s2">"git@github.com:parthivbhagat/pb026393.github.io.git"</span>
+  <span class="p">},</span>
+  <span class="s2">"dependencies"</span><span class="err">:</span><span class="p">{</span>
+    <span class="s2">"fhirclient"</span><span class="err">:</span> <span class="s2">"^0.1.9"</span><span class="p">,</span>
+    <span class="s2">"jquery"</span><span class="err">:</span> <span class="s2">"^2.1.4"</span>
+  <span class="p">},</span>
+  <span class="s2">"scripts"</span><span class="err">:</span> <span class="p">{</span>
+    <span class="s2">"build"</span><span class="err">:</span> <span class="s2">"npm run build-es5 &amp;&amp; npm run build-webpack &amp;&amp; npm run build-minify"</span><span class="p">,</span>
+    <span class="s2">"build-doc"</span><span class="err">:</span> <span class="s2">"jsdoc  --package package.json -d doc ./src/**/*.js"</span><span class="p">,</span>
+    <span class="s2">"build-es5"</span><span class="err">:</span> <span class="s2">"babel src --out-dir dist"</span><span class="p">,</span>
+    <span class="s2">"build-webpack"</span><span class="err">:</span> <span class="s2">"webpack --progress --colors --display-error-details"</span><span class="p">,</span>
+    <span class="s2">"build-minify"</span><span class="err">:</span> <span class="s2">"npm run build-minify-js &amp;&amp; npm run build-minify-css"</span><span class="p">,</span>
+    <span class="s2">"build-minify-js"</span><span class="err">:</span> <span class="s2">"uglifyjs dist/js/starter_app.js &gt; dist/js/starter_app.min.js"</span><span class="p">,</span>
+    <span class="s2">"build-minify-css"</span><span class="err">:</span> <span class="s2">"lessc --clean-css dist/css/starter_app.css dist/css/starter_app.min.css"</span><span class="p">,</span>
+    <span class="s2">"lint"</span><span class="err">:</span> <span class="s2">"npm run lint-js &amp;&amp; npm run lint-css"</span><span class="p">,</span>
+    <span class="s2">"lint-js"</span><span class="err">:</span> <span class="s2">"jshint src/*.js --config .jshintrc; exit 0"</span><span class="p">,</span>
+    <span class="s2">"test"</span><span class="err">:</span> <span class="s2">"karma start test/karma.conf.js --single-run --no-auto-watch"</span><span class="p">,</span>
+    <span class="s2">"debug"</span><span class="err">:</span> <span class="s2">"karma start test/karma.conf.js --browsers=Chrome --no-single-run --auto-watch --debug"</span>
+
+  <span class="p">},</span>
+  <span class="s2">"sourceFiles"</span><span class="err">:</span> <span class="p">{</span>
+    <span class="s2">"js"</span><span class="err">:</span> <span class="p">[</span>
+      <span class="s2">"./src/js"</span>
+    <span class="p">],</span>
+    <span class="s2">"css"</span><span class="err">:</span> <span class="p">[</span>
+      <span class="s2">"./src/css"</span>
+    <span class="p">]</span>
+  <span class="p">},</span>
+  <span class="s2">"testFiles"</span><span class="err">:</span> <span class="p">[</span>
+    <span class="s2">"./test/spec"</span>
+  <span class="p">],</span>
+
+  <span class="s2">"devDependencies"</span><span class="err">:</span> <span class="p">{</span>
+    <span class="s2">"babel-cli"</span><span class="err">:</span> <span class="s2">"^6.9.0"</span><span class="p">,</span>
+    <span class="s2">"babel-eslint"</span><span class="err">:</span> <span class="s2">"^6.0.4"</span><span class="p">,</span>
+    <span class="s2">"babel-loader"</span><span class="err">:</span> <span class="s2">"^6.2.4"</span><span class="p">,</span>
+    <span class="s2">"babel-polyfill"</span><span class="err">:</span> <span class="s2">"^6.9.1"</span><span class="p">,</span>
+    <span class="s2">"babel-preset-es2015"</span><span class="err">:</span> <span class="s2">"^6.9.0"</span><span class="p">,</span>
+    <span class="s2">"commander"</span><span class="err">:</span> <span class="s2">"^2.9.0"</span><span class="p">,</span>
+    <span class="s2">"css-loader"</span><span class="err">:</span> <span class="s2">"^0.23.1"</span><span class="p">,</span>
+    <span class="s2">"csslint"</span><span class="err">:</span> <span class="s2">"^0.10.0"</span><span class="p">,</span>
+    <span class="s2">"eslint"</span><span class="err">:</span> <span class="s2">"^2.11.1"</span><span class="p">,</span>
+    <span class="s2">"extract-text-webpack-plugin"</span><span class="err">:</span> <span class="s2">"^1.0.1"</span><span class="p">,</span>
+    <span class="s2">"jasmine-core"</span><span class="err">:</span> <span class="s2">"^2.4.1"</span><span class="p">,</span>
+    <span class="s2">"jsdoc"</span><span class="err">:</span> <span class="s2">"^3.4.0"</span><span class="p">,</span>
+    <span class="s2">"jshint"</span><span class="err">:</span> <span class="s2">"^2.9.1"</span><span class="p">,</span>
+    <span class="s2">"karma"</span><span class="err">:</span> <span class="s2">"^0.13.22"</span><span class="p">,</span>
+    <span class="s2">"karma-chrome-launcher"</span><span class="err">:</span> <span class="s2">"^1.0.1"</span><span class="p">,</span>
+    <span class="s2">"karma-coverage"</span><span class="err">:</span> <span class="s2">"^1.1.1"</span><span class="p">,</span>
+    <span class="s2">"karma-firefox-launcher"</span><span class="err">:</span> <span class="s2">"^1.0.0"</span><span class="p">,</span>
+    <span class="s2">"karma-jasmine"</span><span class="err">:</span> <span class="s2">"^0.3.8"</span><span class="p">,</span>
+    <span class="s2">"karma-phantomjs-launcher"</span><span class="err">:</span> <span class="s2">"^1.0.0"</span><span class="p">,</span>
+    <span class="s2">"karma-requirejs"</span><span class="err">:</span> <span class="s2">"^0.2.6"</span><span class="p">,</span>
+    <span class="s2">"karma-spec-reporter"</span><span class="err">:</span> <span class="s2">"0.0.26"</span><span class="p">,</span>
+    <span class="s2">"karma-webpack"</span><span class="err">:</span> <span class="s2">"^1.7.0"</span><span class="p">,</span>
+    <span class="s2">"less"</span><span class="err">:</span> <span class="s2">"^2.6.1"</span><span class="p">,</span>
+    <span class="s2">"less-loader"</span><span class="err">:</span> <span class="s2">"^2.2.3"</span><span class="p">,</span>
+    <span class="s2">"less-plugin-clean-css"</span><span class="err">:</span> <span class="s2">"^1.5.1"</span><span class="p">,</span>
+    <span class="s2">"matchdep"</span><span class="err">:</span> <span class="s2">"^1.0.0"</span><span class="p">,</span>
+    <span class="s2">"prettyjson"</span><span class="err">:</span> <span class="s2">"^1.1.3"</span><span class="p">,</span>
+    <span class="s2">"requirejs"</span><span class="err">:</span> <span class="s2">"^2.2.0"</span><span class="p">,</span>
+    <span class="s2">"style-loader"</span><span class="err">:</span> <span class="s2">"^0.13.1"</span><span class="p">,</span>
+    <span class="s2">"uglify-js"</span><span class="err">:</span> <span class="s2">"^2.6.2"</span><span class="p">,</span>
+    <span class="s2">"sinon"</span><span class="err">:</span> <span class="s2">"^1.15.4"</span><span class="p">,</span>
+    <span class="s2">"webpack"</span><span class="err">:</span> <span class="s2">"^1.13.0"</span><span class="p">,</span>
+    <span class="s2">"webpack-dev-server"</span><span class="err">:</span> <span class="s2">"^1.14.1"</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>In your package.json file create dependencies section and put fhirclient in it. It should look something like this</p>
+
+<p><code class="prettyprint">&quot;dependencies&quot;:{
+    &quot;fhirclient&quot;: &quot;^0.1.9&quot;,
+    &quot;jquery&quot;: &quot;^2.1.4&quot;
+}</code></p>
+
+<p>This will include fhir-client.js library when you run <code class="prettyprint">npm install</code> on your local copy.</p>
 
 <p>The SMART on FHIR JavaScript client library helps you build browser-based SMART apps that interact with a FHIR REST API server. It can help your app get authorization tokens, provide information about the user and patient record in context, and issue API calls to fetch clinical data. This tutorial will lead you through the basics of building a SMART app using the JavaScript client.</p>
 
@@ -205,11 +296,11 @@
 </span>  <span class="o">&lt;</span><span class="sr">/head</span><span class="err">&gt;
 </span>  <span class="nx">Loading</span><span class="p">...</span>
   <span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">"./lib/fhir-client.js"</span><span class="o">&gt;&lt;</span><span class="sr">/script</span><span class="err">&gt;
+    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s1">'./dist/js/starter_app.min.js'</span><span class="o">&gt;&lt;</span><span class="sr">/script</span><span class="err">&gt;
 </span>    <span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
       <span class="nx">FHIR</span><span class="p">.</span><span class="nx">oauth2</span><span class="p">.</span><span class="nx">authorize</span><span class="p">({</span>
-        <span class="s1">'client_id'</span><span class="p">:</span> <span class="s1">'CLIENT_ID'</span><span class="p">,</span>
-        <span class="s1">'scope'</span><span class="p">:</span>  <span class="s1">'patient/Patient.read Observation.read launch online_access openid profile'</span>
+        <span class="s1">'client_id'</span><span class="p">:</span> <span class="s1">'df7c5a17-52dd-4c88-8a32-cdfb557ba758'</span><span class="p">,</span>
+        <span class="s1">'scope'</span><span class="p">:</span>  <span class="s1">'patient/Patient.read patient/Observation.read launch online_access openid profile'</span>
       <span class="p">});</span>
     <span class="o">&lt;</span><span class="sr">/script</span><span class="err">&gt;
 </span>  <span class="o">&lt;</span><span class="sr">/body</span><span class="err">&gt;
@@ -278,6 +369,8 @@
 <pre class="highlight javascript"><code><span class="cm">/*jshint esversion: 6 */</span>
 <span class="kr">import</span> <span class="nx">Util</span> <span class="nx">from</span> <span class="s1">'./util'</span><span class="p">;</span>
 <span class="kr">import</span> <span class="nx">Patient</span> <span class="nx">from</span> <span class="s1">'./patient'</span><span class="p">;</span>
+<span class="kr">import</span> <span class="nx">FHIRClient</span> <span class="nx">from</span> <span class="s1">'../../node_modules/fhirclient/fhir-client.js'</span><span class="p">;</span>
+<span class="kr">import</span> <span class="nx">$</span> <span class="nx">from</span> <span class="s1">'../../node_modules/jquery/src/jquery'</span><span class="p">;</span>
 
 <span class="kr">class</span> <span class="nx">StarterApp</span> <span class="p">{</span>
   <span class="kr">static</span> <span class="nx">extractData</span><span class="p">()</span> <span class="p">{</span>
@@ -559,9 +652,7 @@ and many others</li>
 </span>      <span class="o">&lt;</span><span class="sr">/table</span><span class="err">&gt;
 </span>    <span class="o">&lt;</span><span class="sr">/div&gt;  </span><span class="err"> 
 </span>  <span class="o">&lt;</span><span class="sr">/body</span><span class="err">&gt;
-</span>  <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s1">'./lib/fhir-client.js'</span><span class="o">&gt;&lt;</span><span class="sr">/script</span><span class="err">&gt;
 </span>  <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s1">'./dist/js/starter_app.min.js'</span><span class="o">&gt;&lt;</span><span class="sr">/script</span><span class="err">&gt;
-</span>  <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s1">'./lib/jquery.min.js'</span><span class="o">&gt;&lt;</span><span class="sr">/script</span><span class="err">&gt;
 </span>  <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s1">'./dist/js/draw_visualization.js'</span><span class="o">&gt;&lt;</span><span class="sr">/script</span><span class="err">&gt;
 </span>  <span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
     <span class="nx">StarterApp</span><span class="p">.</span><span class="nx">extractData</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span>
