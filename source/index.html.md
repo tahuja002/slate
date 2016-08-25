@@ -12,6 +12,7 @@ search: true
 This document will help you get started on how to use SMART on FHIR API to create your app with CERNER
 
 # Project Set up
+
 Create your project on any hosting platform and create following files:
 
 * launch.html 
@@ -22,11 +23,102 @@ Create your project on any hosting platform and create following files:
 * src/observation.js 
 * src/util.js 
 * src/draw_visualization.js and 
-* lib folder
 * dist folder ( we will use this folder to keep our ES5 code )
 
-# Download fhir-client.js
-Download [**fhir-client.js**](https://github.com/smart-on-fhir/client-js/blob/master/dist/fhir-client.js) and place it under lib folder. This is the open source FHIR javascript library which would help us with OAUTH2 transactions.
+# Install fhir-client.js
+
+> package.json
+
+```javascript
+{
+  "name": "smart-starter-app",
+  "version": "1.0.0",
+  "author": "Cerner Corporation, Cloud App Dev Platform",
+  "description": "== README",
+  "main": "./src/starter_app.js",
+  "style": "dist/css/starter_app.css",
+  "less": "src/less/manifest.less",
+  "license": "== LICENSE",
+  "homepage": "https://github.com/parthivbhagat/pb026393.github.io",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:parthivbhagat/pb026393.github.io.git"
+  },
+  "dependencies":{
+    "fhirclient": "^0.1.9",
+    "jquery": "^2.1.4"
+  },
+  "scripts": {
+    "build": "npm run build-es5 && npm run build-webpack && npm run build-minify",
+    "build-doc": "jsdoc  --package package.json -d doc ./src/**/*.js",
+    "build-es5": "babel src --out-dir dist",
+    "build-webpack": "webpack --progress --colors --display-error-details",
+    "build-minify": "npm run build-minify-js && npm run build-minify-css",
+    "build-minify-js": "uglifyjs dist/js/starter_app.js > dist/js/starter_app.min.js",
+    "build-minify-css": "lessc --clean-css dist/css/starter_app.css dist/css/starter_app.min.css",
+    "lint": "npm run lint-js && npm run lint-css",
+    "lint-js": "jshint src/*.js --config .jshintrc; exit 0",
+    "test": "karma start test/karma.conf.js --single-run --no-auto-watch",
+    "debug": "karma start test/karma.conf.js --browsers=Chrome --no-single-run --auto-watch --debug"
+    
+  },
+  "sourceFiles": {
+    "js": [
+      "./src/js"
+    ],
+    "css": [
+      "./src/css"
+    ]
+  },
+  "testFiles": [
+    "./test/spec"
+  ],
+  
+  "devDependencies": {
+    "babel-cli": "^6.9.0",
+    "babel-eslint": "^6.0.4",
+    "babel-loader": "^6.2.4",
+    "babel-polyfill": "^6.9.1",
+    "babel-preset-es2015": "^6.9.0",
+    "commander": "^2.9.0",
+    "css-loader": "^0.23.1",
+    "csslint": "^0.10.0",
+    "eslint": "^2.11.1",
+    "extract-text-webpack-plugin": "^1.0.1",
+    "jasmine-core": "^2.4.1",
+    "jsdoc": "^3.4.0",
+    "jshint": "^2.9.1",
+    "karma": "^0.13.22",
+    "karma-chrome-launcher": "^1.0.1",
+    "karma-coverage": "^1.1.1",
+    "karma-firefox-launcher": "^1.0.0",
+    "karma-jasmine": "^0.3.8",
+    "karma-phantomjs-launcher": "^1.0.0",
+    "karma-requirejs": "^0.2.6",
+    "karma-spec-reporter": "0.0.26",
+    "karma-webpack": "^1.7.0",
+    "less": "^2.6.1",
+    "less-loader": "^2.2.3",
+    "less-plugin-clean-css": "^1.5.1",
+    "matchdep": "^1.0.0",
+    "prettyjson": "^1.1.3",
+    "requirejs": "^2.2.0",
+    "style-loader": "^0.13.1",
+    "uglify-js": "^2.6.2",
+    "sinon": "^1.15.4",
+    "webpack": "^1.13.0",
+    "webpack-dev-server": "^1.14.1"
+  }
+}
+```
+In your package.json file create dependencies section and put fhirclient in it. It should look something like this
+
+`"dependencies":{
+    "fhirclient": "^0.1.9",
+    "jquery": "^2.1.4"
+}`
+
+This will include fhir-client.js library when you run `npm install` on your local copy.
 
 The SMART on FHIR JavaScript client library helps you build browser-based SMART apps that interact with a FHIR REST API server. It can help your app get authorization tokens, provide information about the user and patient record in context, and issue API calls to fetch clinical data. This tutorial will lead you through the basics of building a SMART app using the JavaScript client.
 
@@ -66,11 +158,11 @@ After this you will receive an email stating what your Client ID and Launch URL 
   </head>
   Loading...
   <body>
-    <script src="./lib/fhir-client.js"></script>
+    <script src='./dist/js/starter_app.min.js'></script>
     <script>
       FHIR.oauth2.authorize({
-        'client_id': 'CLIENT_ID',
-        'scope':  'patient/Patient.read Observation.read launch online_access openid profile'
+        'client_id': 'df7c5a17-52dd-4c88-8a32-cdfb557ba758',
+        'scope':  'patient/Patient.read patient/Observation.read launch online_access openid profile'
       });
     </script>
   </body>
@@ -111,6 +203,8 @@ For our APP we will use Patient.read, Observation.read, launch, online_access, o
 /*jshint esversion: 6 */
 import Util from './util';
 import Patient from './patient';
+import FHIRClient from '../../node_modules/fhirclient/fhir-client.js';
+import $ from '../../node_modules/jquery/src/jquery';
 
 class StarterApp {
   static extractData() {
@@ -388,9 +482,7 @@ function drawVisualization(p) {
       </table>
     </div>   
   </body>
-  <script src='./lib/fhir-client.js'></script>
   <script src='./dist/js/starter_app.min.js'></script>
-  <script src='./lib/jquery.min.js'></script>
   <script src='./dist/js/draw_visualization.js'></script>
   <script>
     StarterApp.extractData().then(
