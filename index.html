@@ -115,7 +115,11 @@
       <div class="content">
         <h1 id="introduction">Introduction</h1>
 
-<p>This document will help you get started on how to use SMART on FHIR API to create your app with CERNER</p>
+<p>This document will help you get started on how to use SMART on FHIR API to create your app with CERNER.</p>
+
+<h1 id="app-launch-flow">APP Launch Flow</h1>
+
+<p><img title="High Level EHR APP Launch Flow" alt="alt text" src="/images/ehr_launch_seq.PNG" /></p>
 
 <h1 id="project-set-up">Project Set up</h1>
 
@@ -132,6 +136,8 @@
 <li>src/draw_visualization.js and </li>
 <li>dist folder ( we will use this folder to keep our ES5 code )</li>
 </ul>
+
+<p>You can also clone the project structure from <a href="https://github.com/parthivbhagat/smart-app-starter">smart-app-starter</a>. You will need <code class="prettyprint">node.js</code> to be installed to be able to build this project.</p>
 
 <h1 id="install-fhir-client-js">Install fhir-client.js</h1>
 
@@ -240,7 +246,7 @@
 
 <h1 id="registering-smart-app">Registering SMART APP</h1>
 
-<p>Once we have the SMART App created per the Project Setup step, get the application hosted. Your application is now ready to be registered with CERNER. Go to the link <a href="http://www.cerner.com/FHIR_Application_Authorization_Request/">FHIR Application Authorization Request</a>. and fill up following details</p>
+<p>Once we have the SMART App created per the Project Setup step, get the application hosted. Your application is now ready to be registered with CERNER. Go to the link <a href="https://developerportal.devcernerpowerchart.com/register">Developer Portal APP Registration</a>, sign into your CERNER Care Account and fill up following details:</p>
 
 <table><thead>
 <tr>
@@ -249,36 +255,44 @@
 </tr>
 </thead><tbody>
 <tr>
-<td>Application Name</td>
+<td>App Name</td>
 <td>Any name for your APP you want to give</td>
 </tr>
 <tr>
-<td>Redirect URL</td>
-<td>Just put your base app url. Like https://app_url/</td>
-</tr>
-<tr>
-<td>Email Address</td>
-<td>Your email address to get the details for client id</td>
-</tr>
-<tr>
-<td>Logo URL</td>
-<td></td>
-</tr>
-<tr>
-<td>SMART Launch URL</td>
+<td>SMART Launch URI</td>
 <td>URL to the launch.html file . Like https://app_url/launch.html</td>
 </tr>
 <tr>
-<td>Scope Required</td>
-<td>Select User-Specific Scope. Select online_access, launch, openid, profile and Patient.read</td>
+<td>Redirect URI</td>
+<td>Just put your base app url. Like https://app_url/</td>
 </tr>
 <tr>
-<td>FHIR version</td>
-<td>Select DSTU Final</td>
+<td>App Type</td>
+<td>SMART App type. Provider facing or Patient facing App.</td>
+</tr>
+<tr>
+<td>Fhir Spec</td>
+<td>The FHIR server version you want to target your SMART App against.</td>
+</tr>
+<tr>
+<td>Authorized</td>
+<td>Select yes. Authorized App will go through secured OAuth2 login.</td>
+</tr>
+<tr>
+<td>Standard Scopes</td>
+<td>These are standard scopes that are required to launch SMART App.</td>
+</tr>
+<tr>
+<td>User Scopes</td>
+<td>Select appropriate user scopes</td>
+</tr>
+<tr>
+<td>Patient Scopes</td>
+<td>Select appropriate patient scopes</td>
 </tr>
 </tbody></table>
 
-<p>and click Submit. This will send request to CERNER FHIR group for them to create client id for the app authorization.</p>
+<p>and click Register. This will send request to CERNER FHIR group for them to create client id for the app authorization.</p>
 
 <p>After this you will receive an email stating what your Client ID and Launch URL is.</p>
 
@@ -312,6 +326,8 @@
 </blockquote>
 
 <p>Before you are able to run any operations against the FHIR API using the JS client, you will need to initialize it first.</p>
+
+<p>Based on the client_id, current EHR user, the EHR makes a decision to approve or deny access. This decision is communicated to the app by redirection to the app&rsquo;s registered redirect URL. So always make sure we replace the CLIENT_ID with client id provided after your APP gets registered.</p>
 
 <p>When an EHR user launches your app, you get a “launch request” notification. Just ask for the permissions you need using OAuth scopes like patient/*.read and once you’re authorized you’ll have an access token with the permissions you need – including access to clinical data and context like:</p>
 
@@ -359,7 +375,10 @@
 </tr>
 </tbody></table>
 
-<p>For our APP we will use Patient.read, Observation.read, launch, online_access, openid profile</p>
+<p>For our APP we will use Patient.read, Observation.read.
+We will always include launch, online_access, openid profile scopes to our APP.</p>
+
+<p><strong>Note:</strong> Cerner does not allow use of wildcards(*). So instead of patient/*.read you will need specify a particular scope of resource you will be using. Something like patient/Patient.read, patient/Observation.read etc. For list of resources visit <a href="http://fhir.cerner.com/">http://fhir.cerner.com/</a> </p>
 
 <h1 id="obtaining-the-context">Obtaining the context</h1>
 
@@ -558,10 +577,6 @@ and many others</li>
 
 <p>Please see the fhir.js documentation for the complete list of available operations.</p>
 
-<h1 id="transpiling-the-es6-code-to-es5-code">Transpiling the ES6 code to ES5 code</h1>
-
-<p>We will use bable to transpile out ES6 code in src folder to ES5 code in dist folder</p>
-
 <h1 id="displaying-the-resource">Displaying the Resource</h1>
 
 <blockquote>
@@ -669,11 +684,11 @@ and many others</li>
 </span>
 </code></pre>
 
-<p>We will put the display logic in draw_visualization.js file. Here is what it should look like</p>
+<p>We will put the display logic in draw_visualization.js file. Here is what it should look like.</p>
 
 <h1 id="test">Test</h1>
 
-<p>Commit your changes and hit the link mentioned in the email https://APP_URL/launch.html?iss=ABC&amp;launch=XYZ. You should see your index.html page with Patient demographics in it</p>
+<p>Commit your changes and hit the link mentioned in the email https://APP_URL/launch.html?iss=ABC&amp;launch=XYZ. You should see your index.html page with Patient demographics in it.</p>
 
 <h1 id="reading-a-single-resource">Reading a single resource</h1>
 
@@ -694,6 +709,151 @@ and many others</li>
 <li><p><em>smart.api.search({type: resourceType, query: queryObject})</em> when you want to search across patients, or</p></li>
 <li><p><em>smart.patient.api.search({type: resourceType, query: queryObject})</em> when you only want results for the patient in context.</p></li>
 </ul>
+
+<h1 id="create-tests">Create tests</h1>
+
+<blockquote>
+<p>karma.conf.js</p>
+</blockquote>
+<pre class="highlight javascript"><code><span class="c1">// Karma configuration</span>
+<span class="kd">var</span> <span class="nx">webpack</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'karma-webpack'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">webpackConfig</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'../webpack.config'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">ExtractTextPlugin</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'extract-text-webpack-plugin'</span><span class="p">);</span>
+
+<span class="nx">webpackConfig</span><span class="p">.</span><span class="nx">module</span><span class="p">.</span><span class="nx">loaders</span> <span class="o">=</span> <span class="p">[</span>
+  <span class="p">{</span>
+    <span class="na">test</span><span class="p">:</span> <span class="sr">/</span><span class="se">\.(</span><span class="sr">js|jsx</span><span class="se">)</span><span class="sr">$/</span><span class="p">,</span> <span class="na">exclude</span><span class="p">:</span> <span class="sr">/</span><span class="se">(</span><span class="sr">node_modules</span><span class="se">)</span><span class="sr">/</span><span class="p">,</span>
+    <span class="na">loader</span><span class="p">:</span> <span class="s1">'babel-loader'</span>
+  <span class="p">},</span>
+  <span class="p">{</span>
+    <span class="na">test</span><span class="p">:</span> <span class="sr">/</span><span class="se">\.</span><span class="sr">less$/</span><span class="p">,</span>
+    <span class="na">loader</span><span class="p">:</span> <span class="nx">ExtractTextPlugin</span><span class="p">.</span><span class="nx">extract</span><span class="p">(</span><span class="s2">"style-loader"</span><span class="p">,</span> <span class="s2">"css-loader!less-loader"</span><span class="p">)</span>
+  <span class="p">}</span>
+<span class="p">];</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">config</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">config</span><span class="p">.</span><span class="nx">set</span><span class="p">({</span>
+
+    <span class="c1">// base path that will be used to resolve all patterns (eg. files, exclude)</span>
+    <span class="na">basePath</span><span class="p">:</span> <span class="s1">'../'</span><span class="p">,</span>
+
+
+    <span class="c1">// frameworks to use</span>
+    <span class="c1">// available frameworks: https://npmjs.org/browse/keyword/karma-adapter</span>
+    <span class="na">frameworks</span><span class="p">:</span> <span class="p">[</span><span class="s1">'jasmine'</span><span class="p">],</span>
+
+
+    <span class="c1">// list of files / patterns to load in the browser</span>
+    <span class="na">files</span><span class="p">:</span> <span class="p">[</span>
+      <span class="s1">'test/**/*_spec.js'</span><span class="p">,</span>
+      <span class="s1">'lib/**.js'</span>
+    <span class="p">],</span>
+    <span class="na">plugins</span><span class="p">:</span> <span class="p">[</span>
+      <span class="nx">webpack</span><span class="p">,</span> 
+      <span class="s1">'karma-jasmine'</span><span class="p">,</span>
+      <span class="s1">'karma-chrome-launcher'</span><span class="p">,</span>
+      <span class="s1">'karma-firefox-launcher'</span><span class="p">,</span>
+      <span class="s1">'karma-phantomjs-launcher'</span><span class="p">,</span>
+      <span class="s1">'karma-coverage'</span><span class="p">,</span>
+      <span class="s1">'karma-spec-reporter'</span>
+    <span class="p">],</span>
+    <span class="na">browsers</span><span class="p">:</span> <span class="p">[</span> <span class="s1">'PhantomJS'</span> <span class="p">],</span>
+    <span class="na">preprocessors</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s1">'test/**/*_spec.js'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'webpack'</span><span class="p">],</span>
+      <span class="s1">'src/**/*.js'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'webpack'</span><span class="p">,</span> <span class="s1">'coverage'</span><span class="p">]</span>
+    <span class="p">},</span>
+    <span class="na">reporters</span><span class="p">:</span> <span class="p">[</span><span class="s1">'spec'</span><span class="p">,</span> <span class="s1">'coverage'</span><span class="p">],</span>
+    <span class="na">coverageReporter</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">dir</span><span class="p">:</span> <span class="s1">'target/reports/coverage'</span><span class="p">,</span>
+      <span class="na">reporters</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="s1">'html'</span><span class="p">,</span> <span class="na">subdir</span><span class="p">:</span> <span class="s1">'report-html'</span> <span class="p">},</span>
+        <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="s1">'lcov'</span><span class="p">,</span> <span class="na">subdir</span><span class="p">:</span> <span class="s1">'report-lcov'</span> <span class="p">},</span>
+        <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="s1">'cobertura'</span><span class="p">,</span> <span class="na">subdir</span><span class="p">:</span> <span class="s1">'.'</span><span class="p">,</span> <span class="na">file</span><span class="p">:</span> <span class="s1">'cobertura.txt'</span> <span class="p">}</span>
+      <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="na">webpack</span><span class="p">:</span> <span class="nx">webpackConfig</span><span class="p">,</span>
+    <span class="na">webpackMiddleware</span><span class="p">:</span> <span class="p">{</span> <span class="na">noInfo</span><span class="p">:</span> <span class="kc">true</span> <span class="p">}</span>
+  <span class="p">});</span>
+<span class="p">};</span>
+
+</code></pre>
+
+<blockquote>
+<p>starter_app_spec.js</p>
+</blockquote>
+<pre class="highlight javascript"><code><span class="kr">import</span> <span class="nx">StarterApp</span> <span class="nx">from</span> <span class="s1">'js/starter_app'</span><span class="p">;</span>
+<span class="kr">import</span> <span class="nx">Patient</span> <span class="nx">from</span> <span class="s1">'js/patient'</span><span class="p">;</span>
+
+<span class="nx">describe</span> <span class="p">(</span><span class="s1">'StarterApp'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="nx">describe</span> <span class="p">(</span><span class="s1">'FHIR service'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(){</span>
+    <span class="nx">it</span> <span class="p">(</span><span class="s1">'checked if ready method gets invoked'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">mock</span> <span class="o">=</span> <span class="nx">jasmine</span><span class="p">.</span><span class="nx">createSpyObj</span><span class="p">(</span><span class="s1">'FHIR.oauth2'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'ready'</span><span class="p">]);</span>
+      <span class="nx">mock</span><span class="p">.</span><span class="nx">ready</span><span class="p">();</span>
+      <span class="nx">expect</span><span class="p">(</span><span class="nx">mock</span><span class="p">.</span><span class="nx">ready</span><span class="p">).</span><span class="nx">toBeDefined</span><span class="p">();</span>
+      <span class="nx">expect</span><span class="p">(</span><span class="nx">mock</span><span class="p">.</span><span class="nx">ready</span><span class="p">).</span><span class="nx">toHaveBeenCalled</span><span class="p">();</span>
+
+    <span class="p">});</span>
+  <span class="p">});</span>
+
+  <span class="nx">describe</span> <span class="p">(</span><span class="s1">'Extract Data'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(){</span>
+    <span class="nx">it</span> <span class="p">(</span><span class="s1">'checked if onReady method gets invoked'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">mock</span> <span class="o">=</span> <span class="nx">jasmine</span><span class="p">.</span><span class="nx">createSpyObj</span><span class="p">(</span><span class="s1">'StarterApp.extractData'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'onReady'</span><span class="p">]);</span>
+      <span class="nx">mock</span><span class="p">.</span><span class="nx">onReady</span><span class="p">();</span>
+      <span class="nx">expect</span><span class="p">(</span><span class="nx">mock</span><span class="p">.</span><span class="nx">onReady</span><span class="p">).</span><span class="nx">toBeDefined</span><span class="p">();</span>
+      <span class="nx">expect</span><span class="p">(</span><span class="nx">mock</span><span class="p">.</span><span class="nx">onReady</span><span class="p">).</span><span class="nx">toHaveBeenCalled</span><span class="p">();</span>      
+    <span class="p">});</span>
+  <span class="p">});</span>
+
+  <span class="nx">describe</span> <span class="p">(</span><span class="s1">'Patient Constructor'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(){</span>
+    <span class="nx">it</span> <span class="p">(</span><span class="s1">'checked if patient Constructor returns object with blank elements'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">patient</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Patient</span><span class="p">();</span>
+
+      <span class="nx">expect</span><span class="p">(</span><span class="nx">patient</span><span class="p">.</span><span class="nx">fname</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="s1">''</span><span class="p">);</span>
+      <span class="nx">expect</span><span class="p">(</span><span class="nx">patient</span><span class="p">.</span><span class="nx">lname</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="s1">''</span><span class="p">);</span>
+      <span class="nx">expect</span><span class="p">(</span><span class="nx">patient</span><span class="p">.</span><span class="nx">gender</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="s1">''</span><span class="p">);</span>
+      <span class="nx">expect</span><span class="p">(</span><span class="nx">patient</span><span class="p">.</span><span class="nx">birthday</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="s1">''</span><span class="p">);</span>
+      <span class="nx">expect</span><span class="p">(</span><span class="nx">patient</span><span class="p">.</span><span class="nx">age</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="s1">''</span><span class="p">);</span>
+      <span class="nx">expect</span><span class="p">(</span><span class="nx">patient</span><span class="p">.</span><span class="nx">obv</span><span class="p">.</span><span class="nx">height</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="s1">''</span><span class="p">);</span>
+      <span class="nx">expect</span><span class="p">(</span><span class="nx">patient</span><span class="p">.</span><span class="nx">obv</span><span class="p">.</span><span class="nx">systolicbp</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="s1">''</span><span class="p">);</span>
+      <span class="nx">expect</span><span class="p">(</span><span class="nx">patient</span><span class="p">.</span><span class="nx">obv</span><span class="p">.</span><span class="nx">diastolicbp</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="s1">''</span><span class="p">);</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+
+
+
+
+<span class="p">});</span>
+
+</code></pre>
+
+<p>We are going to use karma and jasmine to write our tests</p>
+
+<p><strong>Suites:</strong> <code class="prettyprint">describe</code> Your Tests</p>
+
+<p>A test suite begins with a call to the global Jasmine function <code class="prettyprint">describe</code> with two parameters: a string and a function. The string is a name or title for a spec suite – usually what is being tested. The function is a block of code that implements the suite.</p>
+
+<p><strong>Specs</strong></p>
+
+<p>Specs are defined by calling the global Jasmine function <code class="prettyprint">it</code>, which, like <code class="prettyprint">describe</code> takes a string and a function. The string is the title of the spec and the function is the spec, or test. A spec contains one or more expectations that test the state of the code. An expectation in Jasmine is an assertion that is either true or false. A spec with all true expectations is a passing spec. A spec with one or more false expectations is a failing spec.</p>
+
+<p><strong>Expectations</strong></p>
+
+<p>Expectations are built with the function <code class="prettyprint">expect</code> which takes a value, called the actual. It is chained with a Matcher function, which takes the expected value.</p>
+
+<p><strong>Spies:</strong> <code class="prettyprint">createSpyObj</code></p>
+
+<p>In order to create a mock with multiple spies, use <code class="prettyprint">jasmine.createSpyObj</code> and pass an array of strings. It returns an object that has a property for each string that is a spy.</p>
+
+<p>For more information look at <a href="http://jasmine.github.io/2.1/introduction.html">Jasmine</a></p>
+
+<h1 id="run-tests">Run tests</h1>
+
+<ol>
+<li><p>Include in script section of package.json following:
+<code class="prettyprint">&quot;test&quot;: &quot;karma start test/karma.conf.js --single-run --no-auto-watch&quot;</code></p></li>
+<li><p>Run <code class="prettyprint">npm run test</code> to run tests that we have created</p></li>
+</ol>
 
       </div>
       <div class="dark-box">

@@ -9,7 +9,11 @@ search: true
 
 # Introduction
 
-This document will help you get started on how to use SMART on FHIR API to create your app with CERNER
+This document will help you get started on how to use SMART on FHIR API to create your app with CERNER.
+
+# APP Launch Flow
+
+![alt text](images/ehr_launch_seq.PNG "High Level EHR APP Launch Flow")
 
 # Project Set up
 
@@ -24,6 +28,8 @@ Create your project on any hosting platform and create following files:
 * src/util.js 
 * src/draw_visualization.js and 
 * dist folder ( we will use this folder to keep our ES5 code )
+
+You can also clone the project structure from [smart-app-starter](https://github.com/parthivbhagat/smart-app-starter). You will need `node.js` to be installed to be able to build this project.
 
 # Install fhir-client.js
 
@@ -128,19 +134,21 @@ The SMART JS client uses the open-source fhir.js for interfacing with SMART API 
 * *smart.patient.api* Context aware API which automatically applies its operations to the patient in context
 
 # Registering SMART APP
-Once we have the SMART App created per the Project Setup step, get the application hosted. Your application is now ready to be registered with CERNER. Go to the link [FHIR Application Authorization Request](http://www.cerner.com/FHIR_Application_Authorization_Request/). and fill up following details
+Once we have the SMART App created per the Project Setup step, get the application hosted. Your application is now ready to be registered with CERNER. Go to the link [Developer Portal APP Registration](https://developerportal.devcernerpowerchart.com/register), sign into your CERNER Care Account and fill up following details:
 
 Field | Description
 --------- | -----------
-Application Name | Any name for your APP you want to give
-Redirect URL | Just put your base app url. Like https://app_url/
-Email Address | Your email address to get the details for client id
-Logo URL | 
-SMART Launch URL | URL to the launch.html file . Like https://app_url/launch.html
-Scope Required | Select User-Specific Scope. Select online_access, launch, openid, profile and Patient.read
-FHIR version | Select DSTU Final
+App Name | Any name for your APP you want to give
+SMART Launch URI | URL to the launch.html file . Like https://app_url/launch.html
+Redirect URI | Just put your base app url. Like https://app_url/
+App Type | SMART App type. Provider facing or Patient facing App.
+Fhir Spec | The FHIR server version you want to target your SMART App against.
+Authorized | Select yes. Authorized App will go through secured OAuth2 login.
+Standard Scopes | These are standard scopes that are required to launch SMART App.
+User Scopes | Select appropriate user scopes
+Patient Scopes | Select appropriate patient scopes
 
-and click Submit. This will send request to CERNER FHIR group for them to create client id for the app authorization.
+and click Register. This will send request to CERNER FHIR group for them to create client id for the app authorization.
 
 After this you will receive an email stating what your Client ID and Launch URL is.
 
@@ -173,6 +181,8 @@ After this you will receive an email stating what your Client ID and Launch URL 
 
 Before you are able to run any operations against the FHIR API using the JS client, you will need to initialize it first.
 
+Based on the client_id, current EHR user, the EHR makes a decision to approve or deny access. This decision is communicated to the app by redirection to the app's registered redirect URL. So always make sure we replace the CLIENT_ID with client id provided after your APP gets registered.
+
 When an EHR user launches your app, you get a “launch request” notification. Just ask for the permissions you need using OAuth scopes like patient/*.read and once you’re authorized you’ll have an access token with the permissions you need – including access to clinical data and context like:
 
 * which patient is in-context in the EHR
@@ -191,9 +201,10 @@ launch/patient | When launching outside the EHR, ask for a patient to be selecte
 offline_access | Request a refresh_token that can be used to obtain a new access token to replace an expired one, even after the end-user no long is online after the access token rexpires
 online_access | Request a refresh_token that can be used to obtain a new access token to replace an expired one, and that will be usable for as long as the end-user remains online.
 
-For our APP we will use Patient.read, Observation.read, launch, online_access, openid profile
+For our APP we will use Patient.read, Observation.read.
+We will always include launch, online_access, openid profile scopes to our APP.
 
-
+**Note:** Cerner does not allow use of wildcards(*). So instead of patient/\*.read you will need specify a particular scope of resource you will be using. Something like patient/Patient.read, patient/Observation.read etc. For list of resources visit [http://fhir.cerner.com/](http://fhir.cerner.com/) 
 
 # Obtaining the context
 
@@ -389,10 +400,6 @@ and many others
 
 Please see the fhir.js documentation for the complete list of available operations.
 
-
-# Transpiling the ES6 code to ES5 code
-We will use bable to transpile out ES6 code in src folder to ES5 code in dist folder
-
 # Displaying the Resource
 
 >draw_visualization.js
@@ -499,10 +506,10 @@ function drawVisualization(p) {
 
 ```
 
-We will put the display logic in draw_visualization.js file. Here is what it should look like
+We will put the display logic in draw_visualization.js file. Here is what it should look like.
 
 # Test
-Commit your changes and hit the link mentioned in the email https://APP_URL/launch.html?iss=ABC&launch=XYZ. You should see your index.html page with Patient demographics in it
+Commit your changes and hit the link mentioned in the email https://APP_URL/launch.html?iss=ABC&launch=XYZ. You should see your index.html page with Patient demographics in it.
 
 # Reading a single resource
 
@@ -521,8 +528,145 @@ To search for resources you’ll use either:
 
 * *smart.patient.api.search({type: resourceType, query: queryObject})* when you only want results for the patient in context.
 
+# Create tests
+
+> karma.conf.js
+
+``` javascript
+// Karma configuration
+var webpack = require('karma-webpack');
+var webpackConfig = require('../webpack.config');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
+
+webpackConfig.module.loaders = [
+  {
+    test: /\.(js|jsx)$/, exclude: /(node_modules)/,
+    loader: 'babel-loader'
+  },
+  {
+    test: /\.less$/,
+    loader: ExtractTextPlugin.extract("style-loader", "css-loader!less-loader")
+  }
+];
+
+module.exports = function(config) {
+  config.set({
+
+    // base path that will be used to resolve all patterns (eg. files, exclude)
+    basePath: '../',
+
+
+    // frameworks to use
+    // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
+    frameworks: ['jasmine'],
+
+
+    // list of files / patterns to load in the browser
+    files: [
+      'test/**/*_spec.js',
+      'lib/**.js'
+    ],
+    plugins: [
+      webpack, 
+      'karma-jasmine',
+      'karma-chrome-launcher',
+      'karma-firefox-launcher',
+      'karma-phantomjs-launcher',
+      'karma-coverage',
+      'karma-spec-reporter'
+    ],
+    browsers: [ 'PhantomJS' ],
+    preprocessors: {
+      'test/**/*_spec.js': ['webpack'],
+      'src/**/*.js': ['webpack', 'coverage']
+    },
+    reporters: ['spec', 'coverage'],
+    coverageReporter: {
+      dir: 'target/reports/coverage',
+      reporters: [
+        { type: 'html', subdir: 'report-html' },
+        { type: 'lcov', subdir: 'report-lcov' },
+        { type: 'cobertura', subdir: '.', file: 'cobertura.txt' }
+      ]
+    },
+    webpack: webpackConfig,
+    webpackMiddleware: { noInfo: true }
+  });
+};
+
+```
+> starter_app_spec.js
+
+```javascript
+import StarterApp from 'js/starter_app';
+import Patient from 'js/patient';
+
+describe ('StarterApp', function() {
+  
+  describe ('FHIR service', function (){
+    it ('checked if ready method gets invoked', function () {
+      var mock = jasmine.createSpyObj('FHIR.oauth2', ['ready']);
+      mock.ready();
+      expect(mock.ready).toBeDefined();
+      expect(mock.ready).toHaveBeenCalled();
+     
+    });
+  });
+  
+  describe ('Extract Data', function (){
+    it ('checked if onReady method gets invoked', function () {
+      var mock = jasmine.createSpyObj('StarterApp.extractData', ['onReady']);
+      mock.onReady();
+      expect(mock.onReady).toBeDefined();
+      expect(mock.onReady).toHaveBeenCalled();      
+    });
+  });
+ 
+  describe ('Patient Constructor', function (){
+    it ('checked if patient Constructor returns object with blank elements', function () {
+      var patient = new Patient();
+      
+      expect(patient.fname).toEqual('');
+      expect(patient.lname).toEqual('');
+      expect(patient.gender).toEqual('');
+      expect(patient.birthday).toEqual('');
+      expect(patient.age).toEqual('');
+      expect(patient.obv.height).toEqual('');
+      expect(patient.obv.systolicbp).toEqual('');
+      expect(patient.obv.diastolicbp).toEqual('');
+    });
+  });
 
 
 
 
+});
 
+```
+We are going to use karma and jasmine to write our tests
+
+**Suites:** `describe` Your Tests
+
+A test suite begins with a call to the global Jasmine function `describe` with two parameters: a string and a function. The string is a name or title for a spec suite – usually what is being tested. The function is a block of code that implements the suite.
+
+**Specs**
+
+Specs are defined by calling the global Jasmine function `it`, which, like `describe` takes a string and a function. The string is the title of the spec and the function is the spec, or test. A spec contains one or more expectations that test the state of the code. An expectation in Jasmine is an assertion that is either true or false. A spec with all true expectations is a passing spec. A spec with one or more false expectations is a failing spec.
+
+**Expectations**
+
+Expectations are built with the function `expect` which takes a value, called the actual. It is chained with a Matcher function, which takes the expected value.
+
+**Spies:** `createSpyObj`
+
+In order to create a mock with multiple spies, use `jasmine.createSpyObj` and pass an array of strings. It returns an object that has a property for each string that is a spy.
+
+For more information look at [Jasmine](http://jasmine.github.io/2.1/introduction.html)
+
+
+# Run tests
+
+1. Include in script section of package.json following:
+`"test": "karma start test/karma.conf.js --single-run --no-auto-watch"`
+
+2. Run `npm run test` to run tests that we have created
