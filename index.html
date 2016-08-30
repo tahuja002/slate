@@ -115,7 +115,11 @@
       <div class="content">
         <h1 id="introduction">Introduction</h1>
 
-<p>This document will help you get started on how to use SMART on FHIR API to create your app with CERNER</p>
+<p>This document will help you get started on how to use SMART on FHIR API to create your app with CERNER.</p>
+
+<h1 id="app-launch-flow">APP Launch Flow</h1>
+
+<p><img title="High Level EHR APP Launch Flow" alt="alt text" src="http://localhost:4567/images/ehr_launch_seq.png" /></p>
 
 <h1 id="project-set-up">Project Set up</h1>
 
@@ -132,6 +136,8 @@
 <li>src/draw_visualization.js and </li>
 <li>dist folder ( we will use this folder to keep our ES5 code )</li>
 </ul>
+
+<p>You can also clone the project structure from <a href="https://github.com/parthivbhagat/smart-app-starter">smart-app-starter</a>. You will need <code class="prettyprint">node.js</code> to be installed to be able to build this project.</p>
 
 <h1 id="install-fhir-client-js">Install fhir-client.js</h1>
 
@@ -240,7 +246,7 @@
 
 <h1 id="registering-smart-app">Registering SMART APP</h1>
 
-<p>Once we have the SMART App created per the Project Setup step, get the application hosted. Your application is now ready to be registered with CERNER. Go to the link <a href="http://www.cerner.com/FHIR_Application_Authorization_Request/">FHIR Application Authorization Request</a>. and fill up following details</p>
+<p>Once we have the SMART App created per the Project Setup step, get the application hosted. Your application is now ready to be registered with CERNER. Go to the link <a href="https://developerportal.devcernerpowerchart.com/register">Developer Portal APP Registration</a>, sign into your CERNER Care Account and fill up following details:</p>
 
 <table><thead>
 <tr>
@@ -249,36 +255,44 @@
 </tr>
 </thead><tbody>
 <tr>
-<td>Application Name</td>
+<td>App Name</td>
 <td>Any name for your APP you want to give</td>
 </tr>
 <tr>
-<td>Redirect URL</td>
-<td>Just put your base app url. Like https://app_url/</td>
-</tr>
-<tr>
-<td>Email Address</td>
-<td>Your email address to get the details for client id</td>
-</tr>
-<tr>
-<td>Logo URL</td>
-<td></td>
-</tr>
-<tr>
-<td>SMART Launch URL</td>
+<td>SMART Launch URI</td>
 <td>URL to the launch.html file . Like https://app_url/launch.html</td>
 </tr>
 <tr>
-<td>Scope Required</td>
-<td>Select User-Specific Scope. Select online_access, launch, openid, profile and Patient.read</td>
+<td>Redirect URI</td>
+<td>Just put your base app url. Like https://app_url/</td>
 </tr>
 <tr>
-<td>FHIR version</td>
-<td>Select DSTU Final</td>
+<td>App Type</td>
+<td>SMART App type. Provider facing or Patient facing App.</td>
+</tr>
+<tr>
+<td>Fhir Spec</td>
+<td>The FHIR server version you want to target your SMART App against.</td>
+</tr>
+<tr>
+<td>Authorized</td>
+<td>Select yes. Authorized App will go through secured OAuth2 login.</td>
+</tr>
+<tr>
+<td>Standard Scopes</td>
+<td>These are standard scopes that are required to launch SMART App.</td>
+</tr>
+<tr>
+<td>User Scopes</td>
+<td>Select appropriate user scopes</td>
+</tr>
+<tr>
+<td>Patient Scopes</td>
+<td>Select appropriate patient scopes</td>
 </tr>
 </tbody></table>
 
-<p>and click Submit. This will send request to CERNER FHIR group for them to create client id for the app authorization.</p>
+<p>and click Register. This will send request to CERNER FHIR group for them to create client id for the app authorization.</p>
 
 <p>After this you will receive an email stating what your Client ID and Launch URL is.</p>
 
@@ -312,6 +326,8 @@
 </blockquote>
 
 <p>Before you are able to run any operations against the FHIR API using the JS client, you will need to initialize it first.</p>
+
+<p>Based on the client_id, current EHR user, the EHR makes a decision to approve or deny access. This decision is communicated to the app by redirection to the app&rsquo;s registered redirect URL. So always make sure we replace the CLIENT_ID with client id provided after your APP gets registered.</p>
 
 <p>When an EHR user launches your app, you get a “launch request” notification. Just ask for the permissions you need using OAuth scopes like patient/*.read and once you’re authorized you’ll have an access token with the permissions you need – including access to clinical data and context like:</p>
 
@@ -359,7 +375,10 @@
 </tr>
 </tbody></table>
 
-<p>For our APP we will use Patient.read, Observation.read, launch, online_access, openid profile</p>
+<p>For our APP we will use Patient.read, Observation.read.
+We will always include launch, online_access, openid profile scopes to our APP.</p>
+
+<p><strong>Note:</strong> Cerner does not allow use of wildcards(*). So instead of patient/*.read you will need specify a particular scope of resource you will be using. Something like patient/Patient.read, patient/Observation.read etc. For list of resources visit <a href="http://fhir.cerner.com/">http://fhir.cerner.com/</a> </p>
 
 <h1 id="obtaining-the-context">Obtaining the context</h1>
 
@@ -560,7 +579,7 @@ and many others</li>
 
 <h1 id="transpiling-the-es6-code-to-es5-code">Transpiling the ES6 code to ES5 code</h1>
 
-<p>We will use bable to transpile out ES6 code in src folder to ES5 code in dist folder</p>
+<p>We will use bable to transpile out ES6 code in src folder to ES5 code in dist folder.</p>
 
 <h1 id="displaying-the-resource">Displaying the Resource</h1>
 
@@ -669,11 +688,11 @@ and many others</li>
 </span>
 </code></pre>
 
-<p>We will put the display logic in draw_visualization.js file. Here is what it should look like</p>
+<p>We will put the display logic in draw_visualization.js file. Here is what it should look like.</p>
 
 <h1 id="test">Test</h1>
 
-<p>Commit your changes and hit the link mentioned in the email https://APP_URL/launch.html?iss=ABC&amp;launch=XYZ. You should see your index.html page with Patient demographics in it</p>
+<p>Commit your changes and hit the link mentioned in the email https://APP_URL/launch.html?iss=ABC&amp;launch=XYZ. You should see your index.html page with Patient demographics in it.</p>
 
 <h1 id="reading-a-single-resource">Reading a single resource</h1>
 
