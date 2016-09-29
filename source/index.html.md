@@ -265,7 +265,7 @@ Once the client is initialized, you can obtain the context in which it was launc
 
 * *smart.user.read()*
 * *smart.patient.read()*
-	
+  
 Both of these return a jQuery Deferred object which you can register a success callback to process the returned FHIR resource.
 
 
@@ -409,6 +409,18 @@ To search for resources you’ll use either:
 
 # FAQ
 
-1. Can I use [babel-polyfill](https://www.npmjs.com/package/babel-polyfill) in my npm package?
+* Can I use [babel-polyfill](https://www.npmjs.com/package/babel-polyfill) in my npm package?
 
 Using `babel-polyfill` in your project will let you write latest ES6 code. But on Chrome some sort of memory leak occurs on every refresh of the page. See this [babel-polyfill Memory Leaks](https://github.com/babel/babel/issues/4523)
+
+* Do i need to put follwing tag in all HTML `<meta http-equiv='X-UA-Compatible' content='IE=edge' />`
+
+Yes. This ensures that the page will be displayed in edge mode instead of ie7 which is what the webservers are forcing. For more information on what these document modes do see "Understanding legacy document modes"  section.
+
+* Do i need to put my javascripts at end of body tag?
+
+Yes. Scripts, historically, blocked additional resources from being downloaded more quickly. By placing them at the bottom, your style, content, and media could download more quickly giving the perception of improved performance.
+
+* Do i need to put `<!DOCTYPE html>` at start of each HTML file?
+
+Yes. This will indicate to the browser that the page is HTML5 and it should run in standards mode. 
