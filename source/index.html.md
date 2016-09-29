@@ -13,7 +13,7 @@ This document will help you get started on how to use SMART on FHIR API to creat
 
 # APP Launch Flow
 
-![alt text](images/ehr_launch_seq.PNG "High Level EHR APP Launch Flow")
+![alt text](ehr_launch_seq.PNG "High Level EHR APP Launch Flow")
 
 # Project Set up
 
