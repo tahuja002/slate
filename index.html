@@ -590,11 +590,29 @@ and many others</li>
 
 <h1 id="faq">FAQ</h1>
 
-<ol>
+<ul>
 <li>Can I use <a href="https://www.npmjs.com/package/babel-polyfill">babel-polyfill</a> in my npm package?</li>
-</ol>
+</ul>
 
 <p>Using <code class="prettyprint">babel-polyfill</code> in your project will let you write latest ES6 code. But on Chrome some sort of memory leak occurs on every refresh of the page. See this <a href="https://github.com/babel/babel/issues/4523">babel-polyfill Memory Leaks</a></p>
+
+<ul>
+<li>Do i need to put follwing tag in all HTML <code class="prettyprint">&lt;meta http-equiv=&#39;X-UA-Compatible&#39; content=&#39;IE=edge&#39; /&gt;</code></li>
+</ul>
+
+<p>Yes. This ensures that the page will be displayed in edge mode instead of ie7 which is what the webservers are forcing. For more information on what these document modes do see &ldquo;Understanding legacy document modes&rdquo;  section.</p>
+
+<ul>
+<li>Do i need to put my javascripts at end of body tag?</li>
+</ul>
+
+<p>Yes. Scripts, historically, blocked additional resources from being downloaded more quickly. By placing them at the bottom, your style, content, and media could download more quickly giving the perception of improved performance.</p>
+
+<ul>
+<li>Do i need to put <code class="prettyprint">&lt;!DOCTYPE html&gt;</code> at start of each HTML file?</li>
+</ul>
+
+<p>Yes. This will indicate to the browser that the page is HTML5 and it should run in standards mode. </p>
 
       </div>
       <div class="dark-box">
