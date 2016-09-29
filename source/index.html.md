@@ -38,7 +38,7 @@ The SMART JS client uses the open-source fhir.js for interfacing with SMART API 
 * *smart.patient.api* Context aware API which automatically applies its operations to the patient in context
 
 # Registering SMART APP
-Once we have the SMART App created per the Project Setup step, get the application hosted. Your application is now ready to be registered with CERNER. Go to the link [Developer Portal APP Registration](https://developerportal.devcernerpowerchart.com/register), sign into your CERNER Care Account and fill up following details:
+Once we have the SMART App created per the Project Setup step, get the application hosted. Your application is now ready to be registered with CERNER. Go to the link [Developer Portal APP Registration](https://code.cerner.com/developer/smart-on-fhir/register), sign into your CERNER Care Account and fill up following details:
 
 Field | Description
 --------- | -----------
@@ -46,7 +46,7 @@ App Name | Any name for your APP you want to give
 SMART Launch URI | URL to the launch.html file . Like https://app_url/launch.html
 Redirect URI | Just put your base app url. Like https://app_url/
 App Type | SMART App type. Provider facing or Patient facing App.
-Fhir Spec | The FHIR server version you want to target your SMART App against.
+FHIR Spec | The FHIR server version you want to target your SMART App against.
 Authorized | Select yes. Authorized App will go through secured OAuth2 login.
 Standard Scopes | These are standard scopes that are required to launch SMART App.
 User Scopes | Select appropriate user scopes
