@@ -115,28 +115,21 @@
       <div class="content">
         <h1 id="introduction">Introduction</h1>
 
-<p>This document will help you get started on how to use SMART on FHIR API to create your app with CERNER.</p>
+<p>This document will help you get started on how to use SMART on FHIR API to create your app with Cerner.</p>
 
 <h1 id="app-launch-flow">APP Launch Flow</h1>
 
-<p><img title="High Level EHR APP Launch Flow" alt="alt text" src="images/ehr_launch_seq.PNG" /></p>
+<p><img title="High Level EHR APP Launch Flow" alt="alt text" src="/images/ehr_launch_seq.PNG" /></p>
 
 <h1 id="project-set-up">Project Set up</h1>
 
-<p>Create your project on any hosting platform and create following files:</p>
+<p>Clone the project structure from <a href="https://github.com/parthivbhagat/smart-starter-app-es5">smart-starter-app</a>. </p>
 
-<ul>
-<li>launch.html </li>
-<li>index.html </li>
-<li>src/js/starter_app.js </li>
-<li>src/css/starter_app.css</li>
-</ul>
+<p>The project structure includes follwing important files:</p>
 
-<p>You can also clone the project structure from <a href="https://github.com/parthivbhagat/smart-starter-app-es5">smart-app-starter</a>. </p>
+<p><strong>fhir-client.js</strong></p>
 
-<h1 id="install-fhir-client-js">Install fhir-client.js</h1>
-
-<p>Download <a href="https://github.com/smart-on-fhir/client-js/blob/master/dist/fhir-client.js">fhir-client.js</a> and place it under lib folder. This is the open source FHIR javascript library which would help us with OAUTH2 transactions.</p>
+<p>This is the open source FHIR javascript library which would help us with OAUTH2 transactions.</p>
 
 <p>The SMART on FHIR JavaScript client library helps you build browser-based SMART apps that interact with a FHIR REST API server. It can help your app get authorization tokens, provide information about the user and patient record in context, and issue API calls to fetch clinical data. This tutorial will lead you through the basics of building a SMART app using the JavaScript client.</p>
 
@@ -147,9 +140,17 @@
 <li><em>smart.patient.api</em> Context aware API which automatically applies its operations to the patient in context</li>
 </ul>
 
-<h1 id="registering-smart-app">Registering SMART APP</h1>
+<p><strong>launch.html</strong></p>
 
-<p>Once we have the SMART App created per the Project Setup step, get the application hosted. Your application is now ready to be registered with CERNER. Go to the link <a href="https://code.cerner.com/developer/smart-on-fhir/register">Developer Portal APP Registration</a>, sign into your CERNER Care Account and fill up following details:</p>
+<p>This html file is used to authorize the App with FHIR server for scopes the App is trying to use</p>
+
+<p><strong>index.html</strong></p>
+
+<p>This html file is primarily used to display resources on front end</p>
+
+<h1 id="registering-smart-app">Registering SMART App</h1>
+
+<p>Once we have the SMART App created per the Project Setup step, get the application hosted. Your application is now ready to be registered with Cerner. Go to the link <a href="https://code.cerner.com/developer/smart-on-fhir/register">Developer Portal APP Registration</a>, sign into your Cerner Care Account and fill up following details:</p>
 
 <table><thead>
 <tr>
@@ -163,19 +164,19 @@
 </tr>
 <tr>
 <td>SMART Launch URI</td>
-<td>URL to the launch.html file . Like https://app_url/launch.html</td>
+<td>URL to the launch.html file . Like https://<username>.github.io/smart-starter-app/launch.html</td>
 </tr>
 <tr>
 <td>Redirect URI</td>
-<td>Just put your base app url. Like https://app_url/</td>
+<td>Just put your base app url. Like https://<username>.github.io/smart-starter-app/index.html</td>
 </tr>
 <tr>
 <td>App Type</td>
-<td>SMART App type. Provider facing or Patient facing App.</td>
+<td>Select Patient facing App.</td>
 </tr>
 <tr>
 <td>FHIR Spec</td>
-<td>The FHIR server version you want to target your SMART App against.</td>
+<td>Select DSTU2</td>
 </tr>
 <tr>
 <td>Authorized</td>
@@ -187,19 +188,19 @@
 </tr>
 <tr>
 <td>User Scopes</td>
-<td>Select appropriate user scopes</td>
+<td>Dont select anything here</td>
 </tr>
 <tr>
 <td>Patient Scopes</td>
-<td>Select appropriate patient scopes</td>
+<td>Select Patient and Observation scopes</td>
 </tr>
 </tbody></table>
 
-<p>and click Register. This will send request to CERNER FHIR group for them to create client id for the app authorization.</p>
+<p>and click Register. This will send request to Cerner FHIR group for them to create client id for the app authorization.</p>
 
 <p>After this you will receive an email stating what your Client ID and Launch URL is.</p>
 
-<h1 id="initializing-the-client">Initializing the client</h1>
+<h1 id="request-authorization">Request Authorization</h1>
 
 <blockquote>
 <p>launch.html</p>
@@ -230,11 +231,13 @@
 <p>Make sure to replace CLIENT_ID with the client id provided in the email.</p>
 </blockquote>
 
+<p>FHIR.oauth2.authorize will call the following URL with requested scopes <em>https://authorization.sandboxcerner.com/tenants/d075cf8b-3261-481d-97e5-ba6c48d3b41f/protocols/oauth2/profiles/smart-v1/personas/provider/authorize?client_id=df7c5a17-52dd-4c88-8a32-cdfb557ba758&amp;response_type=code&amp;scope=patient%2FPatient.read%20patient%2FObservation.read%20launch%20online_access-%20openid%20profile&amp;redirect_uri=https%3A%2F%2Fparthivbhagat.github.io%2Fpb026393.github.io%2F&amp;state=a0d52f29-8ff1-a186-8337-2a9018979f72&amp;aud=https%3A%2F%2Ffhir.sandboxcernerpowerchart.com%2Fdstu2%2Fd075cf8b-3261-481d-97e5-ba6c48d3b41f&amp;launch=d831018a-bd90-48b1-8c91-e6b346c7f1ea</em></p>
+
 <p>Before you are able to run any operations against the FHIR API using the JS client, you will need to initialize it first.</p>
 
 <p>Based on the client_id, current EHR user, the EHR makes a decision to approve or deny access. This decision is communicated to the app by redirection to the app&rsquo;s registered redirect URL. So always make sure we replace the CLIENT_ID with client id provided after your APP gets registered.</p>
 
-<p>When an EHR user launches your app, you get a “launch request” notification. Just ask for the permissions you need using OAuth scopes like patient/*.read and once you’re authorized you’ll have an access token with the permissions you need – including access to clinical data and context like:</p>
+<p>When an EHR user launches your app, you get a “launch request” notification. Just ask for the permissions you need using OAuth scopes( like patient/Patient.read ) and once you’re authorized you’ll have an access token with the permissions you need – including access to clinical data and context like:</p>
 
 <ul>
 <li>which patient is in-context in the EHR</li>
@@ -251,15 +254,15 @@
 </tr>
 </thead><tbody>
 <tr>
-<td>patient/*.read</td>
-<td>Permission to read any resource for the current patient</td>
+<td>patient/Patient.read</td>
+<td>Permission to read Patient resource for the current patient</td>
 </tr>
 <tr>
-<td>user/*.*</td>
-<td>Permission to read and write all resources that the current user can access</td>
+<td>patient/Observation.read</td>
+<td>Permission to read Observation resource for the current patient</td>
 </tr>
 <tr>
-<td>openid profile</td>
+<td>openid, profile</td>
 <td>Permission to retrieve information about the current logged-in user</td>
 </tr>
 <tr>
@@ -271,21 +274,19 @@
 <td>When launching outside the EHR, ask for a patient to be selected at launch time</td>
 </tr>
 <tr>
-<td>offline_access</td>
-<td>Request a refresh_token that can be used to obtain a new access token to replace an expired one, even after the end-user no long is online after the access token rexpires</td>
-</tr>
-<tr>
 <td>online_access</td>
 <td>Request a refresh_token that can be used to obtain a new access token to replace an expired one, and that will be usable for as long as the end-user remains online.</td>
 </tr>
 </tbody></table>
 
 <p>For our APP we will use Patient.read, Observation.read.
-We will always include launch, online_access, openid profile scopes to our APP.</p>
+We will always include launch, online_access, openid &amp; profile scopes to our APP.</p>
 
-<p><strong>Note:</strong> Cerner does not allow use of wildcards(*). So instead of patient/*.read you will need specify a particular scope of resource you will be using. Something like patient/Patient.read, patient/Observation.read etc. For list of resources visit <a href="http://fhir.cerner.com/">http://fhir.cerner.com/</a> </p>
+<aside class="notice">
+Cerner does not allow use of wildcards(*). So instead of patient/\*.read you will need specify a particular scope of resource you will be using. Something like patient/Patient.read, patient/Observation.read etc. For list of resources visit [http://fhir.cerner.com/](http://fhir.cerner.com/) 
+</aside> 
 
-<h1 id="obtaining-the-context">Obtaining the context</h1>
+<h1 id="access-fhir-resource">Access FHIR Resource</h1>
 
 <blockquote>
 <p>starter_app.js</p>
@@ -454,6 +455,10 @@ and many others</li>
 
 <p>Please see the fhir.js documentation for the complete list of available operations.</p>
 
+<p>smart.patient.read() calls the FHIR server to get the Patient resource. The URL for the call looks like this <em>https://fhir.sandboxcernerpowerchart.com/dstu2/d075cf8b-3261-481d-97e5-ba6c48d3b41f/Patient/1316024</em></p>
+
+<p>smart.patient.api.fetchAll({type: &lsquo;Observation&rsquo;, query:&ldquo;}) calls FHIR server to get Observation Resource. The URL looks like <em>https://fhir.sandboxcernerpowerchart.com/dstu2/d075cf8b-3261-481d-97e5-ba6c48d3b41f/Observation?code=http%3A%2F%2Floinc.org%7C8302-2%2Chttp%3A%2F%2Floinc.org%7C8462-4%2Chttp%3A%2F%2Floinc.org%7C8480-6%2Chttp%3A%2F%2Floinc.org%7C2085-9%2Chttp%3A%2F%2Floinc.org%7C2089-1%2Chttp%3A%2F%2Floinc.org%7C55284-4&amp;patient=1316024</em></p>
+
 <h1 id="displaying-the-resource">Displaying the Resource</h1>
 
 <blockquote>
@@ -564,55 +569,9 @@ and many others</li>
 
 <p>We will put the display logic in draw_visualization function in starter_app.js file. Here is what it should look like.</p>
 
-<h1 id="test">Test</h1>
+<h1 id="test-your-app">Test your App</h1>
 
-<p>Commit your changes and hit the link mentioned in the email https://APP_URL/launch.html?iss=ABC&amp;launch=XYZ. You should see your index.html page with Patient demographics in it.</p>
-
-<h1 id="reading-a-single-resource">Reading a single resource</h1>
-
-<p>Instance-level operations in FHIR work with a single resource instance at a time. Two key operations are read and vread:</p>
-
-<ul>
-<li><em>smart.api.read({type: resourceType, id: resourceId})</em> Read the current state of a given resource</li>
-<li><em>smart.api.vread({type: resourceType, id: resourceId, versionId: versionId})</em> Read a specific version of a given resource</li>
-</ul>
-
-<p>Just change resourceType to the name of a FHIR resource from this complete list.</p>
-
-<h1 id="searching-for-resources">Searching for resources</h1>
-
-<p>To search for resources you’ll use either:</p>
-
-<ul>
-<li><p><em>smart.api.search({type: resourceType, query: queryObject})</em> when you want to search across patients, or</p></li>
-<li><p><em>smart.patient.api.search({type: resourceType, query: queryObject})</em> when you only want results for the patient in context.</p></li>
-</ul>
-
-<h1 id="faq">FAQ</h1>
-
-<ul>
-<li>Can I use <a href="https://www.npmjs.com/package/babel-polyfill">babel-polyfill</a> in my npm package?</li>
-</ul>
-
-<p>Using <code class="prettyprint">babel-polyfill</code> in your project will let you write latest ES6 code. But on Chrome some sort of memory leak occurs on every refresh of the page. See this <a href="https://github.com/babel/babel/issues/4523">babel-polyfill Memory Leaks</a></p>
-
-<ul>
-<li>Do i need to put follwing tag in all HTML <code class="prettyprint">&lt;meta http-equiv=&#39;X-UA-Compatible&#39; content=&#39;IE=edge&#39; /&gt;</code></li>
-</ul>
-
-<p>Yes. This ensures that the page will be displayed in edge mode instead of ie7 which is what the webservers are forcing. For more information on what these document modes do see &ldquo;Understanding legacy document modes&rdquo;  section.</p>
-
-<ul>
-<li>Do i need to put my javascripts at end of body tag?</li>
-</ul>
-
-<p>Yes. Scripts, historically, blocked additional resources from being downloaded more quickly. By placing them at the bottom, your style, content, and media could download more quickly giving the perception of improved performance.</p>
-
-<ul>
-<li>Do i need to put <code class="prettyprint">&lt;!DOCTYPE html&gt;</code> at start of each HTML file?</li>
-</ul>
-
-<p>Yes. This will indicate to the browser that the page is HTML5 and it should run in standards mode. </p>
+<p>Go to your developer portal and click on the App you have registered. Once you are in the App Details you will see client id, redirect url etc. for the App. There is also a Millenium username and password you can use to launch you App. At this time click Begin Testing. A screen will appear which will ask if you need a patient to launch this App. Say yes and select a patient. Once you do that click on Launch. At this time your App will open with the required demographics and observations for the selected patient.</p>
 
       </div>
       <div class="dark-box">
