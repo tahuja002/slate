@@ -59,7 +59,7 @@ and click Register. This will send request to Cerner FHIR group for them to crea
 
 After this you will receive an email stating what your Client ID and Launch URL is.
 
-# Initializing the client
+# Request Authorization
 
 > launch.html
 
@@ -118,7 +118,7 @@ We will always include launch, online_access, openid & profile scopes to our APP
 Cerner does not allow use of wildcards(*). So instead of patient/\*.read you will need specify a particular scope of resource you will be using. Something like patient/Patient.read, patient/Observation.read etc. For list of resources visit [http://fhir.cerner.com/](http://fhir.cerner.com/) 
 </aside> 
 
-# Obtaining the context
+# Access FHIR Resource
 
 > starter_app.js
 
@@ -397,9 +397,8 @@ window.drawVisualization = function(p) {
 
 We will put the display logic in draw_visualization function in starter_app.js file. Here is what it should look like.
 
-# Test
-Commit your changes and hit the link mentioned in the email https://APP_URL/launch.html?iss=ABC&launch=XYZ. You should see your index.html page with Patient demographics in it.
-
+# Test your App
+Go to your developer portal and click on the App you have registered. Once you are in the App Details you will see client id, redirect url etc. for the App. There is also a Millenium username and password you can use to launch you App. At this time click Begin Testing. A screen will appear which will ask if you need a patient to launch this App. Say yes and select a patient. Once you do that click on Launch. At this time your App will open with the required demographics and observations for the selected patient.
 
 
 
