@@ -46,8 +46,8 @@ Once we have the SMART App created per the Project Setup step, get the applicati
 Field | Description
 --------- | -----------
 App Name | Any name for your APP you want to give
-SMART Launch URI | URL to the launch.html file . Like https://<username>.github.io/smart-starter-app/launch.html
-Redirect URI | Just put your base app url. Like https://<username>.github.io/smart-starter-app/index.html
+SMART Launch URI | URL to the launch.html file . Like https://username.github.io/smart-starter-app/launch.html
+Redirect URI | Just put your base app url. Like https://username.github.io/smart-starter-app/index.html
 App Type | Select Patient facing App.
 FHIR Spec | Select DSTU2
 Authorized | Select yes. Authorized App will go through secured OAuth2 login.
