@@ -1,0 +1,584 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>SMART on FHIR Starter APP</title>
+
+    <style>
+      .highlight table td { padding: 5px; }
+.highlight table pre { margin: 0; }
+.highlight, .highlight .w {
+  color: #f8f8f2;
+  background-color: #272822;
+}
+.highlight .err {
+  color: #151515;
+  background-color: #ac4142;
+}
+.highlight .c, .highlight .cd, .highlight .cm, .highlight .c1, .highlight .cs {
+  color: #505050;
+}
+.highlight .cp {
+  color: #f4bf75;
+}
+.highlight .nt {
+  color: #f4bf75;
+}
+.highlight .o, .highlight .ow {
+  color: #d0d0d0;
+}
+.highlight .p, .highlight .pi {
+  color: #d0d0d0;
+}
+.highlight .gi {
+  color: #90a959;
+}
+.highlight .gd {
+  color: #ac4142;
+}
+.highlight .gh {
+  color: #6a9fb5;
+  background-color: #151515;
+  font-weight: bold;
+}
+.highlight .k, .highlight .kn, .highlight .kp, .highlight .kr, .highlight .kv {
+  color: #aa759f;
+}
+.highlight .kc {
+  color: #d28445;
+}
+.highlight .kt {
+  color: #d28445;
+}
+.highlight .kd {
+  color: #d28445;
+}
+.highlight .s, .highlight .sb, .highlight .sc, .highlight .sd, .highlight .s2, .highlight .sh, .highlight .sx, .highlight .s1 {
+  color: #90a959;
+}
+.highlight .sr {
+  color: #75b5aa;
+}
+.highlight .si {
+  color: #8f5536;
+}
+.highlight .se {
+  color: #8f5536;
+}
+.highlight .nn {
+  color: #f4bf75;
+}
+.highlight .nc {
+  color: #f4bf75;
+}
+.highlight .no {
+  color: #f4bf75;
+}
+.highlight .na {
+  color: #6a9fb5;
+}
+.highlight .m, .highlight .mf, .highlight .mh, .highlight .mi, .highlight .il, .highlight .mo, .highlight .mb, .highlight .mx {
+  color: #90a959;
+}
+.highlight .ss {
+  color: #90a959;
+}
+    </style>
+    <link href="stylesheets/screen.css" rel="stylesheet" media="screen" />
+    <link href="stylesheets/print.css" rel="stylesheet" media="print" />
+      <script src="javascripts/all.js"></script>
+  </head>
+
+  <body class="index" data-languages="[&quot;javascript&quot;]">
+    <a href="#" id="nav-button">
+      <span>
+        NAV
+        <img src="images/navbar.png" />
+      </span>
+    </a>
+    <div class="tocify-wrapper">
+      <img src="images/logo.png" />
+        <div class="lang-selector">
+              <a href="#" data-language-name="javascript">javascript</a>
+        </div>
+        <div class="search">
+          <input type="text" class="search" id="input-search" placeholder="Search">
+        </div>
+        <ul class="search-results"></ul>
+      <div id="toc">
+      </div>
+    </div>
+    <div class="page-wrapper">
+      <div class="dark-box"></div>
+      <div class="content">
+        <h1 id="introduction">Introduction</h1>
+
+<p>This document will help you get started on how to use SMART on FHIR API to create your app with Cerner.</p>
+
+<h1 id="app-launch-flow">APP Launch Flow</h1>
+
+<p><img title="High Level EHR APP Launch Flow" alt="alt text" src="/images/ehr_launch_seq.PNG" /></p>
+
+<h1 id="project-set-up">Project Set up</h1>
+
+<p>Clone the project structure from <a href="https://github.com/parthivbhagat/smart-starter-app-es5">smart-starter-app</a>. </p>
+
+<p>The project structure includes follwing important files:</p>
+
+<p><strong>fhir-client.js</strong></p>
+
+<p>This is the open source FHIR javascript library which would help us with OAUTH2 transactions.</p>
+
+<p>The SMART on FHIR JavaScript client library helps you build browser-based SMART apps that interact with a FHIR REST API server. It can help your app get authorization tokens, provide information about the user and patient record in context, and issue API calls to fetch clinical data. This tutorial will lead you through the basics of building a SMART app using the JavaScript client.</p>
+
+<p>The SMART JS client uses the open-source fhir.js for interfacing with SMART API servers. Upon successfully initializing and negotiating the SMART authorization sequence, the client will expose one or two instances of the fhir.js client as applicable via the following handles :</p>
+
+<ul>
+<li><em>smart.api</em> Non-context aware API for executing operations on all authorized resources</li>
+<li><em>smart.patient.api</em> Context aware API which automatically applies its operations to the patient in context</li>
+</ul>
+
+<p><strong>launch.html</strong></p>
+
+<p>This html file is used to authorize the App with FHIR server for scopes the App is trying to use</p>
+
+<p><strong>index.html</strong></p>
+
+<p>This html file is primarily used to display resources on front end</p>
+
+<h1 id="registering-smart-app">Registering SMART App</h1>
+
+<p>Once we have the SMART App created per the Project Setup step, get the application hosted. Your application is now ready to be registered with Cerner. Go to the link <a href="https://code.cerner.com/developer/smart-on-fhir/register">Developer Portal APP Registration</a>, sign into your Cerner Care Account and fill up following details:</p>
+
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>App Name</td>
+<td>Any name for your APP you want to give</td>
+</tr>
+<tr>
+<td>SMART Launch URI</td>
+<td>URL to the launch.html file . Like https://username.github.io/smart-starter-app/launch.html</td>
+</tr>
+<tr>
+<td>Redirect URI</td>
+<td>Just put your base app url. Like https://username.github.io/smart-starter-app/index.html</td>
+</tr>
+<tr>
+<td>App Type</td>
+<td>Select Patient facing App.</td>
+</tr>
+<tr>
+<td>FHIR Spec</td>
+<td>Select DSTU2</td>
+</tr>
+<tr>
+<td>Authorized</td>
+<td>Select yes. Authorized App will go through secured OAuth2 login.</td>
+</tr>
+<tr>
+<td>Standard Scopes</td>
+<td>These are standard scopes that are required to launch SMART App.</td>
+</tr>
+<tr>
+<td>User Scopes</td>
+<td>Dont select anything here</td>
+</tr>
+<tr>
+<td>Patient Scopes</td>
+<td>Select Patient and Observation scopes</td>
+</tr>
+</tbody></table>
+
+<p>and click Register. This will send request to Cerner FHIR group for them to create client id for the app authorization.</p>
+
+<p>After this you will receive an email stating what your Client ID and Launch URL is.</p>
+
+<h1 id="request-authorization">Request Authorization</h1>
+
+<blockquote>
+<p>launch.html</p>
+</blockquote>
+<pre class="highlight javascript"><code><span class="o">&lt;!</span><span class="nx">DOCTYPE</span> <span class="nx">html</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="nx">html</span> <span class="nx">lang</span><span class="o">=</span><span class="s2">"en"</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="nx">head</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="nx">meta</span> <span class="nx">http</span><span class="o">-</span><span class="nx">equiv</span><span class="o">=</span><span class="s2">"Content-Type"</span> <span class="nx">content</span><span class="o">=</span><span class="s2">"text/html; charset=utf-8"</span> <span class="o">/&gt;</span>
+    <span class="o">&lt;</span><span class="nx">meta</span> <span class="nx">http</span><span class="o">-</span><span class="nx">equiv</span><span class="o">=</span><span class="s2">"X-UA-Compatible"</span> <span class="nx">content</span><span class="o">=</span><span class="s2">"IE=edge"</span> <span class="o">/&gt;</span>
+    <span class="o">&lt;</span><span class="nx">title</span><span class="o">&gt;</span><span class="nx">SMART</span> <span class="nx">on</span> <span class="nx">FHIR</span> <span class="nx">Starter</span> <span class="nx">App</span><span class="o">&lt;</span><span class="sr">/title&gt;   </span><span class="err"> 
+</span>  <span class="o">&lt;</span><span class="sr">/head</span><span class="err">&gt;
+</span>  <span class="nx">Loading</span><span class="p">...</span>
+  <span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s1">'./src/js/starter_app.js'</span><span class="o">&gt;&lt;</span><span class="sr">/script</span><span class="err">&gt;
+</span>    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s1">'./lib/fhir-client.min.js'</span><span class="o">&gt;&lt;</span><span class="sr">/script</span><span class="err">&gt;
+</span>    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">"https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"</span><span class="o">&gt;&lt;</span><span class="sr">/script</span><span class="err">&gt;
+</span>    <span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+      <span class="nx">FHIR</span><span class="p">.</span><span class="nx">oauth2</span><span class="p">.</span><span class="nx">authorize</span><span class="p">({</span>
+        <span class="s1">'client_id'</span><span class="p">:</span> <span class="s1">'df7c5a17-52dd-4c88-8a32-cdfb557ba758'</span><span class="p">,</span>
+        <span class="s1">'scope'</span><span class="p">:</span>  <span class="s1">'patient/Patient.read patient/Observation.read launch online_access openid profile'</span>
+      <span class="p">});</span>
+    <span class="o">&lt;</span><span class="sr">/script</span><span class="err">&gt;
+</span>  <span class="o">&lt;</span><span class="sr">/body</span><span class="err">&gt;
+</span><span class="o">&lt;</span><span class="sr">/html</span><span class="err">&gt;
+</span></code></pre>
+
+<blockquote>
+<p>Make sure to replace CLIENT_ID with the client id provided in the email.</p>
+</blockquote>
+
+<p>FHIR.oauth2.authorize will call the following URL with requested scopes <em>https://authorization.sandboxcerner.com/tenants/d075cf8b-3261-481d-97e5-ba6c48d3b41f/protocols/oauth2/profiles/smart-v1/personas/provider/authorize?client_id=df7c5a17-52dd-4c88-8a32-cdfb557ba758&amp;response_type=code&amp;scope=patient%2FPatient.read%20patient%2FObservation.read%20launch%20online_access-%20openid%20profile&amp;redirect_uri=https%3A%2F%2Fparthivbhagat.github.io%2Fpb026393.github.io%2F&amp;state=a0d52f29-8ff1-a186-8337-2a9018979f72&amp;aud=https%3A%2F%2Ffhir.sandboxcernerpowerchart.com%2Fdstu2%2Fd075cf8b-3261-481d-97e5-ba6c48d3b41f&amp;launch=d831018a-bd90-48b1-8c91-e6b346c7f1ea</em></p>
+
+<p>Before you are able to run any operations against the FHIR API using the JS client, you will need to initialize it first.</p>
+
+<p>Based on the client_id, current EHR user, the EHR makes a decision to approve or deny access. This decision is communicated to the app by redirection to the app&rsquo;s registered redirect URL. So always make sure we replace the CLIENT_ID with client id provided after your APP gets registered.</p>
+
+<p>When an EHR user launches your app, you get a “launch request” notification. Just ask for the permissions you need using OAuth scopes( like patient/Patient.read ) and once you’re authorized you’ll have an access token with the permissions you need – including access to clinical data and context like:</p>
+
+<ul>
+<li>which patient is in-context in the EHR</li>
+<li>which encounter is in-context in the EHR</li>
+<li>the physical location of the EHR user</li>
+</ul>
+
+<p>Below are different scopes we can use.</p>
+
+<table><thead>
+<tr>
+<th>Scope</th>
+<th>Grants</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>patient/Patient.read</td>
+<td>Permission to read Patient resource for the current patient</td>
+</tr>
+<tr>
+<td>patient/Observation.read</td>
+<td>Permission to read Observation resource for the current patient</td>
+</tr>
+<tr>
+<td>openid, profile</td>
+<td>Permission to retrieve information about the current logged-in user</td>
+</tr>
+<tr>
+<td>launch</td>
+<td>Permission to obtain launch context when app is launched from an EHR</td>
+</tr>
+<tr>
+<td>launch/patient</td>
+<td>When launching outside the EHR, ask for a patient to be selected at launch time</td>
+</tr>
+<tr>
+<td>online_access</td>
+<td>Request a refresh_token that can be used to obtain a new access token to replace an expired one, and that will be usable for as long as the end-user remains online.</td>
+</tr>
+</tbody></table>
+
+<p>For our APP we will use Patient.read, Observation.read.
+We will always include launch, online_access, openid &amp; profile scopes to our APP.</p>
+
+<aside class="notice">
+Cerner does not allow use of wildcards(*). So instead of patient/\*.read you will need specify a particular scope of resource you will be using. Something like patient/Patient.read, patient/Observation.read etc. For list of resources visit [http://fhir.cerner.com/](http://fhir.cerner.com/) 
+</aside> 
+
+<h1 id="access-fhir-resource">Access FHIR Resource</h1>
+
+<blockquote>
+<p>starter_app.js</p>
+</blockquote>
+<pre class="highlight javascript"><code><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nb">window</span><span class="p">){</span>
+  <span class="nb">window</span><span class="p">.</span><span class="nx">extractData</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">ret</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Deferred</span><span class="p">();</span> 
+
+    <span class="kd">function</span> <span class="nx">onError</span><span class="p">()</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Loading error'</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
+      <span class="nx">ret</span><span class="p">.</span><span class="nx">reject</span><span class="p">();</span>
+    <span class="p">}</span>     
+
+    <span class="kd">function</span> <span class="nx">onReady</span><span class="p">(</span><span class="nx">smart</span><span class="p">)</span>  <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">smart</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="s1">'patient'</span><span class="p">))</span> <span class="p">{</span> 
+        <span class="kd">var</span> <span class="nx">patient</span> <span class="o">=</span> <span class="nx">smart</span><span class="p">.</span><span class="nx">patient</span><span class="p">;</span>
+        <span class="kd">var</span> <span class="nx">pt</span> <span class="o">=</span> <span class="nx">patient</span><span class="p">.</span><span class="nx">read</span><span class="p">();</span>
+        <span class="kd">var</span> <span class="nx">obv</span> <span class="o">=</span> <span class="nx">smart</span><span class="p">.</span><span class="nx">patient</span><span class="p">.</span><span class="nx">api</span><span class="p">.</span><span class="nx">fetchAll</span><span class="p">({</span>
+                      <span class="na">type</span><span class="p">:</span> <span class="s1">'Observation'</span><span class="p">,</span> 
+                      <span class="na">query</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="na">code</span><span class="p">:</span> <span class="p">{</span>
+                          <span class="na">$or</span><span class="p">:</span> <span class="p">[</span><span class="s1">'http://loinc.org|8302-2'</span><span class="p">,</span> <span class="s1">'http://loinc.org|8462-4'</span><span class="p">,</span>
+                                <span class="s1">'http://loinc.org|8480-6'</span><span class="p">,</span> <span class="s1">'http://loinc.org|2085-9'</span><span class="p">,</span>
+                                <span class="s1">'http://loinc.org|2089-1'</span><span class="p">]</span>
+                              <span class="p">}</span>
+                             <span class="p">}</span>
+                    <span class="p">});</span>
+
+        <span class="nx">$</span><span class="p">.</span><span class="nx">when</span><span class="p">(</span><span class="nx">pt</span><span class="p">,</span> <span class="nx">obv</span><span class="p">).</span><span class="nx">fail</span><span class="p">(</span><span class="nx">onError</span><span class="p">);</span>
+
+        <span class="nx">$</span><span class="p">.</span><span class="nx">when</span><span class="p">(</span><span class="nx">pt</span><span class="p">,</span> <span class="nx">obv</span><span class="p">).</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">patient</span><span class="p">,</span> <span class="nx">obv</span><span class="p">)</span> <span class="p">{</span>
+          <span class="kd">var</span> <span class="nx">byCodes</span> <span class="o">=</span> <span class="nx">smart</span><span class="p">.</span><span class="nx">byCodes</span><span class="p">(</span><span class="nx">obv</span><span class="p">,</span> <span class="s1">'code'</span><span class="p">);</span>
+          <span class="kd">var</span> <span class="nx">gender</span> <span class="o">=</span> <span class="nx">patient</span><span class="p">.</span><span class="nx">gender</span><span class="p">;</span>
+          <span class="kd">var</span> <span class="nx">dob</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="nx">patient</span><span class="p">.</span><span class="nx">birthDate</span><span class="p">);</span>     
+          <span class="kd">var</span> <span class="nx">day</span> <span class="o">=</span> <span class="nx">dob</span><span class="p">.</span><span class="nx">getDate</span><span class="p">();</span> 
+          <span class="kd">var</span> <span class="nx">monthIndex</span> <span class="o">=</span> <span class="nx">dob</span><span class="p">.</span><span class="nx">getMonth</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+          <span class="kd">var</span> <span class="nx">year</span> <span class="o">=</span> <span class="nx">dob</span><span class="p">.</span><span class="nx">getFullYear</span><span class="p">();</span>
+
+          <span class="kd">var</span> <span class="nx">dobStr</span> <span class="o">=</span> <span class="nx">monthIndex</span> <span class="o">+</span> <span class="s1">'/'</span> <span class="o">+</span> <span class="nx">day</span> <span class="o">+</span> <span class="s1">'/'</span> <span class="o">+</span> <span class="nx">year</span><span class="p">;</span>
+          <span class="kd">var</span> <span class="nx">fname</span> <span class="o">=</span> <span class="s1">''</span><span class="p">;</span>
+          <span class="kd">var</span> <span class="nx">lname</span> <span class="o">=</span> <span class="s1">''</span><span class="p">;</span>
+
+          <span class="k">if</span><span class="p">(</span><span class="k">typeof</span> <span class="nx">patient</span><span class="p">.</span><span class="nx">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!==</span> <span class="s1">'undefined'</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">fname</span> <span class="o">=</span> <span class="nx">patient</span><span class="p">.</span><span class="nx">name</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">given</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">' '</span><span class="p">);</span>
+            <span class="nx">lname</span> <span class="o">=</span> <span class="nx">patient</span><span class="p">.</span><span class="nx">name</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">family</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">' '</span><span class="p">);</span>
+          <span class="p">}</span>
+
+          <span class="kd">var</span> <span class="nx">height</span> <span class="o">=</span> <span class="nx">byCodes</span><span class="p">(</span><span class="s1">'8302-2'</span><span class="p">);</span>
+          <span class="kd">var</span> <span class="nx">systolicbp</span> <span class="o">=</span> <span class="nx">byCodes</span><span class="p">(</span><span class="s1">'8480-6'</span><span class="p">);</span>
+          <span class="kd">var</span> <span class="nx">diastolicbp</span> <span class="o">=</span> <span class="nx">byCodes</span><span class="p">(</span><span class="s1">'8462-4'</span><span class="p">);</span>
+          <span class="kd">var</span> <span class="nx">hdl</span> <span class="o">=</span> <span class="nx">byCodes</span><span class="p">(</span><span class="s1">'2085-9'</span><span class="p">);</span>
+          <span class="kd">var</span> <span class="nx">ldl</span> <span class="o">=</span> <span class="nx">byCodes</span><span class="p">(</span><span class="s1">'2089-1'</span><span class="p">);</span>
+
+          <span class="kd">var</span> <span class="nx">p</span> <span class="o">=</span> <span class="nx">defaultPatient</span><span class="p">();</span>          
+          <span class="nx">p</span><span class="p">.</span><span class="nx">birthday</span> <span class="o">=</span> <span class="nx">dobStr</span><span class="p">;</span>
+          <span class="nx">p</span><span class="p">.</span><span class="nx">gender</span> <span class="o">=</span> <span class="nx">gender</span><span class="p">;</span>
+          <span class="nx">p</span><span class="p">.</span><span class="nx">fname</span> <span class="o">=</span> <span class="nx">fname</span><span class="p">;</span>
+          <span class="nx">p</span><span class="p">.</span><span class="nx">lname</span> <span class="o">=</span> <span class="nx">lname</span><span class="p">;</span>
+          <span class="nx">p</span><span class="p">.</span><span class="nx">age</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">calculateAge</span><span class="p">(</span><span class="nx">dob</span><span class="p">));</span>
+
+          <span class="k">if</span><span class="p">(</span><span class="k">typeof</span> <span class="nx">height</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">'undefined'</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">height</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">valueQuantity</span><span class="p">.</span><span class="nx">value</span> <span class="o">!=</span> <span class="s1">'undefined'</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">height</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">valueQuantity</span><span class="p">.</span><span class="nx">unit</span> <span class="o">!=</span> <span class="s1">'undefined'</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">p</span><span class="p">.</span><span class="nx">height</span> <span class="o">=</span> <span class="nx">height</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">valueQuantity</span><span class="p">.</span><span class="nx">value</span> <span class="o">+</span> <span class="s1">' '</span> <span class="o">+</span> <span class="nx">height</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">valueQuantity</span><span class="p">.</span><span class="nx">unit</span><span class="p">;</span>
+          <span class="p">}</span>
+
+          <span class="k">if</span><span class="p">(</span><span class="k">typeof</span> <span class="nx">systolicbp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">'undefined'</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">systolicbp</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">valueQuantity</span><span class="p">.</span><span class="nx">value</span> <span class="o">!=</span> <span class="s1">'undefined'</span><span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">systolicbp</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">valueQuantity</span><span class="p">.</span><span class="nx">unit</span> <span class="o">!=</span> <span class="s1">'undefined'</span><span class="p">)</span>  <span class="p">{</span>
+            <span class="nx">p</span><span class="p">.</span><span class="nx">systolicbp</span> <span class="o">=</span> <span class="nx">systolicbp</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">valueQuantity</span><span class="p">.</span><span class="nx">value</span> <span class="o">+</span> 
+                                  <span class="s1">' '</span> <span class="o">+</span> <span class="nx">systolicbp</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">valueQuantity</span><span class="p">.</span><span class="nx">unit</span><span class="p">;</span>
+          <span class="p">}</span>
+
+          <span class="k">if</span><span class="p">(</span><span class="k">typeof</span> <span class="nx">diastolicbp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">'undefined'</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">diastolicbp</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">valueQuantity</span><span class="p">.</span><span class="nx">value</span> <span class="o">!=</span> <span class="s1">'undefined'</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">diastolicbp</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">valueQuantity</span><span class="p">.</span><span class="nx">unit</span> <span class="o">!=</span> <span class="s1">'undefined'</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">p</span><span class="p">.</span><span class="nx">diastolicbp</span> <span class="o">=</span> <span class="nx">diastolicbp</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">valueQuantity</span><span class="p">.</span><span class="nx">value</span> <span class="o">+</span> 
+                                  <span class="s1">' '</span> <span class="o">+</span> <span class="nx">diastolicbp</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">valueQuantity</span><span class="p">.</span><span class="nx">unit</span><span class="p">;</span>
+          <span class="p">}</span>
+
+          <span class="k">if</span><span class="p">(</span><span class="k">typeof</span> <span class="nx">hdl</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">'undefined'</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">hdl</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">valueQuantity</span><span class="p">.</span><span class="nx">value</span> <span class="o">!=</span> <span class="s1">'undefined'</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">hdl</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">valueQuantity</span><span class="p">.</span><span class="nx">unit</span> <span class="o">!=</span> <span class="s1">'undefined'</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">p</span><span class="p">.</span><span class="nx">hdl</span> <span class="o">=</span> <span class="nx">hdl</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">valueQuantity</span><span class="p">.</span><span class="nx">value</span> <span class="o">+</span> <span class="s1">' '</span> <span class="o">+</span> <span class="nx">hdl</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">valueQuantity</span><span class="p">.</span><span class="nx">unit</span><span class="p">;</span>
+          <span class="p">}</span>
+
+          <span class="k">if</span><span class="p">(</span><span class="k">typeof</span> <span class="nx">ldl</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">'undefined'</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">ldl</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">valueQuantity</span><span class="p">.</span><span class="nx">value</span> <span class="o">!=</span> <span class="s1">'undefined'</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">ldl</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">valueQuantity</span><span class="p">.</span><span class="nx">unit</span> <span class="o">!=</span> <span class="s1">'undefined'</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">p</span><span class="p">.</span><span class="nx">ldl</span> <span class="o">=</span> <span class="nx">ldl</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">valueQuantity</span><span class="p">.</span><span class="nx">value</span> <span class="o">+</span> <span class="s1">' '</span> <span class="o">+</span> <span class="nx">ldl</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">valueQuantity</span><span class="p">.</span><span class="nx">unit</span><span class="p">;</span>
+          <span class="p">}</span>
+          <span class="nx">ret</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">p</span><span class="p">);</span>
+        <span class="p">});</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> 
+        <span class="nx">onError</span><span class="p">();</span>
+      <span class="p">}</span>      
+    <span class="p">}</span>
+
+    <span class="nx">FHIR</span><span class="p">.</span><span class="nx">oauth2</span><span class="p">.</span><span class="nx">ready</span><span class="p">(</span><span class="nx">onReady</span><span class="p">,</span> <span class="nx">onError</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nx">ret</span><span class="p">.</span><span class="nx">promise</span><span class="p">();</span>
+
+  <span class="p">};</span>
+
+  <span class="kd">function</span> <span class="nx">defaultPatient</span><span class="p">(){</span>
+    <span class="k">return</span> <span class="p">{</span>
+      <span class="na">fname</span><span class="p">:</span> <span class="p">{</span><span class="na">value</span><span class="p">:</span> <span class="s1">''</span><span class="p">},</span>
+      <span class="na">lname</span><span class="p">:</span> <span class="p">{</span><span class="na">value</span><span class="p">:</span> <span class="s1">''</span><span class="p">},</span>
+      <span class="na">gender</span><span class="p">:</span> <span class="p">{</span><span class="na">value</span><span class="p">:</span> <span class="s1">''</span><span class="p">},</span>
+      <span class="na">birthday</span><span class="p">:</span> <span class="p">{</span><span class="na">value</span><span class="p">:</span> <span class="s1">''</span><span class="p">},</span>
+      <span class="na">age</span><span class="p">:</span> <span class="p">{</span><span class="na">value</span><span class="p">:</span> <span class="s1">''</span><span class="p">},</span>
+      <span class="na">height</span><span class="p">:</span> <span class="p">{</span><span class="na">value</span><span class="p">:</span> <span class="s1">''</span><span class="p">},</span>
+      <span class="na">systolicbp</span><span class="p">:</span> <span class="p">{</span><span class="na">value</span><span class="p">:</span> <span class="s1">''</span><span class="p">},</span>
+      <span class="na">diastolicbp</span><span class="p">:</span> <span class="p">{</span><span class="na">value</span><span class="p">:</span> <span class="s1">''</span><span class="p">},</span>
+      <span class="na">ldl</span><span class="p">:</span> <span class="p">{</span><span class="na">value</span><span class="p">:</span> <span class="s1">''</span><span class="p">},</span>
+      <span class="na">hdl</span><span class="p">:</span> <span class="p">{</span><span class="na">value</span><span class="p">:</span> <span class="s1">''</span><span class="p">},</span>
+    <span class="p">};</span>
+  <span class="p">}</span>
+
+  <span class="kd">function</span> <span class="nx">isLeapYear</span><span class="p">(</span><span class="nx">year</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="nx">year</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">29</span><span class="p">).</span><span class="nx">getMonth</span><span class="p">()</span> <span class="o">===</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="kd">function</span> <span class="nx">calculateAge</span><span class="p">(</span><span class="nx">date</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">Object</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">toString</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">date</span><span class="p">)</span> <span class="o">===</span> <span class="s1">'[object Date]'</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nb">isNaN</span><span class="p">(</span><span class="nx">date</span><span class="p">.</span><span class="nx">getTime</span><span class="p">()))</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="nx">date</span><span class="p">),</span> <span class="nx">now</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">();</span>
+      <span class="kd">var</span> <span class="nx">years</span> <span class="o">=</span> <span class="nx">now</span><span class="p">.</span><span class="nx">getFullYear</span><span class="p">()</span> <span class="o">-</span> <span class="nx">d</span><span class="p">.</span><span class="nx">getFullYear</span><span class="p">();</span>
+      <span class="nx">d</span><span class="p">.</span><span class="nx">setFullYear</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">getFullYear</span><span class="p">()</span> <span class="o">+</span> <span class="nx">years</span><span class="p">);</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">d</span> <span class="o">&gt;</span> <span class="nx">now</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">years</span><span class="o">--</span><span class="p">;</span>
+        <span class="nx">d</span><span class="p">.</span><span class="nx">setFullYear</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">getFullYear</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
+      <span class="p">}</span>
+      <span class="kd">var</span> <span class="nx">days</span> <span class="o">=</span> <span class="p">(</span><span class="nx">now</span><span class="p">.</span><span class="nx">getTime</span><span class="p">()</span> <span class="o">-</span> <span class="nx">d</span><span class="p">.</span><span class="nx">getTime</span><span class="p">())</span> <span class="o">/</span> <span class="p">(</span><span class="mi">3600</span> <span class="o">*</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">);</span>
+      <span class="k">return</span> <span class="nx">years</span> <span class="o">+</span> <span class="nx">days</span> <span class="o">/</span> <span class="p">(</span><span class="nx">isLeapYear</span><span class="p">(</span><span class="nx">now</span><span class="p">.</span><span class="nx">getFullYear</span><span class="p">())</span> <span class="p">?</span> <span class="mi">366</span> <span class="p">:</span> <span class="mi">365</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">else</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">undefined</span><span class="p">;</span>
+    <span class="p">}</span>
+
+  <span class="p">}</span>
+
+  <span class="nb">window</span><span class="p">.</span><span class="nx">drawVisualization</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">p</span><span class="p">)</span> <span class="p">{</span> 
+    <span class="nx">$</span><span class="p">(</span><span class="s1">'#holder'</span><span class="p">).</span><span class="nx">show</span><span class="p">();</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s1">'#loading'</span><span class="p">).</span><span class="nx">hide</span><span class="p">();</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s1">'#fname'</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">fname</span><span class="p">);</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s1">'#lname'</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">lname</span><span class="p">);</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s1">'#gender'</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">gender</span><span class="p">);</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s1">'#birthday'</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">birthday</span><span class="p">);</span>  
+    <span class="nx">$</span><span class="p">(</span><span class="s1">'#age'</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">age</span><span class="p">);</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s1">'#height'</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">height</span><span class="p">);</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s1">'#systolicbp'</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">systolicbp</span><span class="p">);</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s1">'#diastolicbp'</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">diastolicbp</span><span class="p">);</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s1">'#ldl'</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">ldl</span><span class="p">);</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s1">'#hdl'</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">hdl</span><span class="p">);</span>
+  <span class="p">};</span>
+
+<span class="p">})(</span><span class="nb">window</span><span class="p">);</span>
+</code></pre>
+
+<p>Once the client is initialized, you can obtain the context in which it was launched (the user who authorized the client and, if applicable, the patient that has been selected) by using the following methods:</p>
+
+<ul>
+<li><em>smart.user.read()</em></li>
+<li><em>smart.patient.read()</em></li>
+</ul>
+
+<p>Both of these return a jQuery Deferred object which you can register a success callback to process the returned FHIR resource.</p>
+
+<p>Following operations available in <a href="https://github.com/FHIR/fhir.js">fhir.js</a> are supported:</p>
+
+<ul>
+<li><em>read</em> Read the current state of a given resource</li>
+<li><em>search</em> Obtain a resource bundle matching specific search criteria</li>
+<li><em>fetchAll</em> Retrieve the complete set of resources matching specific search criteria
+and many others</li>
+</ul>
+
+<p>Please see the fhir.js documentation for the complete list of available operations.</p>
+
+<p>smart.patient.read() calls the FHIR server to get the Patient resource. The URL for the call looks like this <em>https://fhir.sandboxcernerpowerchart.com/dstu2/d075cf8b-3261-481d-97e5-ba6c48d3b41f/Patient/1316024</em></p>
+
+<p>smart.patient.api.fetchAll({type: &lsquo;Observation&rsquo;, query:&ldquo;}) calls FHIR server to get Observation Resource. The URL looks like <em>https://fhir.sandboxcernerpowerchart.com/dstu2/d075cf8b-3261-481d-97e5-ba6c48d3b41f/Observation?code=http%3A%2F%2Floinc.org%7C8302-2%2Chttp%3A%2F%2Floinc.org%7C8462-4%2Chttp%3A%2F%2Floinc.org%7C8480-6%2Chttp%3A%2F%2Floinc.org%7C2085-9%2Chttp%3A%2F%2Floinc.org%7C2089-1%2Chttp%3A%2F%2Floinc.org%7C55284-4&amp;patient=1316024</em></p>
+
+<h1 id="displaying-the-resource">Displaying the Resource</h1>
+
+<blockquote>
+<p>starter_app.js</p>
+</blockquote>
+<pre class="highlight javascript"><code><span class="nb">window</span><span class="p">.</span><span class="nx">drawVisualization</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">p</span><span class="p">)</span> <span class="p">{</span> 
+    <span class="nx">$</span><span class="p">(</span><span class="s1">'#holder'</span><span class="p">).</span><span class="nx">show</span><span class="p">();</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s1">'#loading'</span><span class="p">).</span><span class="nx">hide</span><span class="p">();</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s1">'#fname'</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">fname</span><span class="p">);</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s1">'#lname'</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">lname</span><span class="p">);</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s1">'#gender'</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">gender</span><span class="p">);</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s1">'#birthday'</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">birthday</span><span class="p">);</span>  
+    <span class="nx">$</span><span class="p">(</span><span class="s1">'#age'</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">age</span><span class="p">);</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s1">'#height'</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">height</span><span class="p">);</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s1">'#systolicbp'</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">systolicbp</span><span class="p">);</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s1">'#diastolicbp'</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">diastolicbp</span><span class="p">);</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s1">'#ldl'</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">ldl</span><span class="p">);</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s1">'#hdl'</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">hdl</span><span class="p">);</span>
+<span class="p">};</span>
+</code></pre>
+
+<blockquote>
+<p>index.html</p>
+</blockquote>
+<pre class="highlight javascript"><code><span class="o">&lt;!</span><span class="nx">DOCTYPE</span> <span class="nx">html</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="nx">html</span><span class="o">&gt;</span>  
+  <span class="o">&lt;</span><span class="nx">head</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="nx">meta</span> <span class="nx">http</span><span class="o">-</span><span class="nx">equiv</span><span class="o">=</span><span class="s1">'X-UA-Compatible'</span> <span class="nx">content</span><span class="o">=</span><span class="s1">'IE=edge'</span> <span class="o">/&gt;</span>
+    <span class="o">&lt;</span><span class="nx">meta</span> <span class="nx">http</span><span class="o">-</span><span class="nx">equiv</span><span class="o">=</span><span class="s1">'Content-Type'</span> <span class="nx">content</span><span class="o">=</span><span class="s1">'text/html; charset=utf-8'</span> <span class="o">/&gt;</span>    
+    <span class="o">&lt;</span><span class="nx">title</span><span class="o">&gt;</span><span class="nx">SMART</span> <span class="nx">Starter</span> <span class="nx">App</span><span class="o">&lt;</span><span class="sr">/title&gt;   </span><span class="err"> 
+</span>
+    <span class="o">&lt;</span><span class="nx">link</span> <span class="nx">rel</span><span class="o">=</span><span class="s1">'stylesheet'</span> <span class="nx">type</span><span class="o">=</span><span class="s1">'text/css'</span> <span class="nx">href</span><span class="o">=</span><span class="s1">'./src/css/starter_app.css'</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="sr">/head</span><span class="err">&gt;
+</span>  <span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="nx">h2</span><span class="o">&gt;</span><span class="nx">SMART</span> <span class="nx">on</span> <span class="nx">FHIR</span> <span class="nx">Starter</span> <span class="nx">App</span><span class="o">&lt;</span><span class="sr">/h2</span><span class="err">&gt;
+</span>    <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="s1">'errors'</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="s2">"loading"</span><span class="o">&gt;</span><span class="nx">Loading</span><span class="p">...</span><span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="s1">'holder'</span> <span class="o">&gt;</span>
+
+      <span class="o">&lt;</span><span class="nx">h2</span><span class="o">&gt;</span><span class="nx">Patient</span> <span class="nx">Resource</span><span class="o">&lt;</span><span class="sr">/h2</span><span class="err">&gt;
+</span>      <span class="o">&lt;</span><span class="nx">table</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">tr</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="nx">th</span><span class="o">&gt;</span><span class="nx">First</span> <span class="nx">Name</span><span class="err">:</span><span class="o">&lt;</span><span class="sr">/th</span><span class="err">&gt;
+</span>          <span class="o">&lt;</span><span class="nx">td</span> <span class="nx">id</span><span class="o">=</span><span class="s1">'fname'</span><span class="o">&gt;&lt;</span><span class="sr">/td&gt;           </span><span class="err"> 
+</span>        <span class="o">&lt;</span><span class="sr">/tr</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">tr</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="nx">th</span><span class="o">&gt;</span><span class="nx">Last</span> <span class="nx">Name</span><span class="err">:</span><span class="o">&lt;</span><span class="sr">/th</span><span class="err">&gt;
+</span>          <span class="o">&lt;</span><span class="nx">td</span> <span class="nx">id</span><span class="o">=</span><span class="s1">'lname'</span><span class="o">&gt;&lt;</span><span class="sr">/td</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="sr">/tr</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">tr</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="nx">th</span><span class="o">&gt;</span><span class="nx">Gender</span><span class="err">:</span><span class="o">&lt;</span><span class="sr">/th</span><span class="err">&gt;
+</span>          <span class="o">&lt;</span><span class="nx">td</span> <span class="nx">id</span><span class="o">=</span><span class="s1">'gender'</span><span class="o">&gt;&lt;</span><span class="sr">/td&gt;         </span><span class="err"> 
+</span>        <span class="o">&lt;</span><span class="sr">/tr</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">tr</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="nx">th</span><span class="o">&gt;</span><span class="nb">Date</span> <span class="nx">of</span> <span class="nx">Birth</span><span class="err">:</span><span class="o">&lt;</span><span class="sr">/th</span><span class="err">&gt;
+</span>          <span class="o">&lt;</span><span class="nx">td</span> <span class="nx">id</span><span class="o">=</span><span class="s1">'birthday'</span><span class="o">&gt;&lt;</span><span class="sr">/td&gt;           </span><span class="err"> 
+</span>        <span class="o">&lt;</span><span class="sr">/tr</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">tr</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="nx">th</span><span class="o">&gt;</span><span class="nx">Age</span><span class="err">:</span><span class="o">&lt;</span><span class="sr">/th</span><span class="err">&gt;
+</span>          <span class="o">&lt;</span><span class="nx">td</span> <span class="nx">id</span><span class="o">=</span><span class="s1">'age'</span><span class="o">&gt;&lt;</span><span class="sr">/td&gt;           </span><span class="err"> 
+</span>        <span class="o">&lt;</span><span class="sr">/tr&gt;      </span><span class="err"> 
+</span>      <span class="o">&lt;</span><span class="sr">/table</span><span class="err">&gt;
+</span>      <span class="o">&lt;</span><span class="nx">h2</span><span class="o">&gt;</span><span class="nx">Observation</span> <span class="nx">Resource</span><span class="o">&lt;</span><span class="sr">/h2</span><span class="err">&gt;
+</span>      <span class="o">&lt;</span><span class="nx">table</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">tr</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="nx">th</span><span class="o">&gt;</span><span class="nx">Height</span><span class="err">:</span><span class="o">&lt;</span><span class="sr">/th&gt;         </span><span class="err"> 
+</span>          <span class="o">&lt;</span><span class="nx">td</span> <span class="nx">id</span><span class="o">=</span><span class="s1">'height'</span><span class="o">&gt;&lt;</span><span class="sr">/td&gt;           </span><span class="err"> 
+</span>        <span class="o">&lt;</span><span class="sr">/tr</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">tr</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="nx">th</span><span class="o">&gt;</span><span class="nx">Systolic</span> <span class="nx">Blood</span> <span class="nx">Pressure</span><span class="err">:</span><span class="o">&lt;</span><span class="sr">/th</span><span class="err">&gt;
+</span>          <span class="o">&lt;</span><span class="nx">td</span> <span class="nx">id</span><span class="o">=</span><span class="s1">'systolicbp'</span><span class="o">&gt;&lt;</span><span class="sr">/td</span><span class="err">&gt;
+</span>
+        <span class="o">&lt;</span><span class="sr">/tr</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">tr</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="nx">th</span><span class="o">&gt;</span><span class="nx">Diastolic</span> <span class="nx">Blood</span> <span class="nx">Pressure</span><span class="err">:</span><span class="o">&lt;</span><span class="sr">/th</span><span class="err">&gt;
+</span>          <span class="o">&lt;</span><span class="nx">td</span> <span class="nx">id</span><span class="o">=</span><span class="s1">'diastolicbp'</span><span class="o">&gt;&lt;</span><span class="sr">/td</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="sr">/tr</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">tr</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="nx">th</span><span class="o">&gt;</span><span class="nx">LDL</span><span class="err">:</span><span class="o">&lt;</span><span class="sr">/th</span><span class="err">&gt;
+</span>          <span class="o">&lt;</span><span class="nx">td</span> <span class="nx">id</span><span class="o">=</span><span class="s1">'ldl'</span><span class="o">&gt;&lt;</span><span class="sr">/td</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="sr">/tr</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">tr</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="nx">th</span><span class="o">&gt;</span><span class="nx">HDL</span><span class="err">:</span><span class="o">&lt;</span><span class="sr">/th</span><span class="err">&gt;
+</span>          <span class="o">&lt;</span><span class="nx">td</span> <span class="nx">id</span><span class="o">=</span><span class="s1">'hdl'</span><span class="o">&gt;&lt;</span><span class="sr">/td</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="sr">/tr</span><span class="err">&gt;
+</span>      <span class="o">&lt;</span><span class="sr">/table</span><span class="err">&gt;
+</span>    <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s1">'./src/js/starter_app.js'</span><span class="o">&gt;&lt;</span><span class="sr">/script</span><span class="err">&gt;
+</span>    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s1">'./lib/fhir-client.min.js'</span><span class="o">&gt;&lt;</span><span class="sr">/script</span><span class="err">&gt;
+</span>    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">"https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"</span><span class="o">&gt;&lt;</span><span class="sr">/script</span><span class="err">&gt;
+</span>    <span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+      <span class="nx">extractData</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span>
+        <span class="c1">//Display Patient Demographics and Observations if extractData was success</span>
+        <span class="kd">function</span><span class="p">(</span><span class="nx">p</span><span class="p">)</span> <span class="p">{</span>          
+          <span class="nx">drawVisualization</span><span class="p">(</span><span class="nx">p</span><span class="p">);</span>
+        <span class="p">},</span> 
+
+        <span class="c1">//Display 'Failed to call FHIR Service' if extractData failed</span>
+        <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+          <span class="nx">$</span><span class="p">(</span><span class="s1">'#errors'</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="s1">'&lt;p&gt; Failed to call FHIR Service &lt;/p&gt;'</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">);</span>
+    <span class="o">&lt;</span><span class="sr">/script</span><span class="err">&gt;
+</span>  <span class="o">&lt;</span><span class="sr">/body</span><span class="err">&gt;
+</span><span class="o">&lt;</span><span class="sr">/html</span><span class="err">&gt;
+</span></code></pre>
+
+<p>We will put the display logic in draw_visualization function in starter_app.js file. Here is what it should look like.</p>
+
+<h1 id="test-your-app">Test your App</h1>
+
+<p>Go to your developer portal and click on the App you have registered. Once you are in the App Details you will see client id, redirect url etc. for the App. There is also a Millenium username and password you can use to launch you App. At this time click Begin Testing. A screen will appear which will ask if you need a patient to launch this App. Say yes and select a patient. Once you do that click on Launch. At this time your App will open with the required demographics and observations for the selected patient.</p>
+
+      </div>
+      <div class="dark-box">
+          <div class="lang-selector">
+                <a href="#" data-language-name="javascript">javascript</a>
+          </div>
+      </div>
+    </div>
+  </body>
+</html>
