@@ -1,189 +1,173 @@
----
-title: API Reference
+--- 
 
-language_tabs:
-  - shell
-  - ruby
-  - python
-  - javascript
+title: Patient Appointment API 
 
-toc_footers:
-  - <a href='#'>Sign Up for a Developer Key</a>
-  - <a href='https://github.com/tripit/slate'>Documentation Powered by Slate</a>
+language_tabs: 
+   - shell 
 
-includes:
-  - errors
+toc_footers: 
+   - <a href='#'>Sign Up for a Developer Key</a> 
+   - <a href='https://github.com/lavkumarv'>Documentation Powered by lav</a> 
 
-search: true
----
+includes: 
+   - errors 
 
-# Introduction
+search: true 
 
-Welcome to the Kittn API! You can use our API to access Kittn API endpoints, which can get information on various cats, kittens, and breeds in our database.
+--- 
 
-We have language bindings in Shell, Ruby, and Python! You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.
+# Introduction 
 
-This example API documentation page was created with [Slate](https://github.com/tripit/slate). Feel free to edit it and use it as a base for your own API's documentation.
+REST Web Service to provide access to Patient Appointment data.  
 
-# Authentication
+# /API/APPOINTMENT/ARRIVE/{SYSTEM}/{SOURCEID}
+## ***GET*** 
 
-> To authorize, use this code:
+**Summary:** Arrive Appointment
 
-```ruby
-require 'kittn'
+**Description:** Arrive an Appointment via System Code and Source System Id.
 
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-```
+### HTTP Request 
+`***GET*** /api/appointment/arrive/{system}/{sourceId}` 
 
-```python
-import kittn
+**Parameters**
 
-api = kittn.authorize('meowmeowmeow')
-```
+| Name | Located in | Description | Required | Type |
+| ---- | ---------- | ----------- | -------- | ---- |
+| sourceId | path | sourceId | Yes | string |
+| system | path | system | Yes | string |
 
-```shell
-# With shell, you can just pass the correct header with each request
-curl "api_endpoint_here"
-  -H "Authorization: meowmeowmeow"
-```
+**Responses**
 
-```javascript
-const kittn = require('kittn');
+| Code | Description |
+| ---- | ----------- |
+| 200 | OK |
+| 401 | Unauthorized |
+| 403 | Forbidden |
+| 404 | Not Found |
 
-let api = kittn.authorize('meowmeowmeow');
-```
+# /API/APPOINTMENT/CANCEL/{SYSTEM}/{SOURCEID}
+## ***GET*** 
 
-> Make sure to replace `meowmeowmeow` with your API key.
+**Summary:** Cancel Appointment
 
-Kittn uses API keys to allow access to the API. You can register a new Kittn API key at our [developer portal](http://example.com/developers).
+**Description:** Cancel Appointment via System Code and Source System Id.
 
-Kittn expects for the API key to be included in all API requests to the server in a header that looks like the following:
+### HTTP Request 
+`***GET*** /api/appointment/cancel/{system}/{sourceId}` 
 
-`Authorization: meowmeowmeow`
+**Parameters**
 
-<aside class="notice">
-You must replace <code>meowmeowmeow</code> with your personal API key.
-</aside>
+| Name | Located in | Description | Required | Type |
+| ---- | ---------- | ----------- | -------- | ---- |
+| sourceId | path | sourceId | Yes | string |
+| system | path | system | Yes | string |
+| cancelCode | query | cancelCode | No | string |
 
-# Kittens
+**Responses**
 
-## Get All Kittens
+| Code | Description |
+| ---- | ----------- |
+| 200 | OK |
+| 401 | Unauthorized |
+| 403 | Forbidden |
+| 404 | Not Found |
 
-```ruby
-require 'kittn'
+# /API/APPOINTMENT/CREATE
+## ***POST*** 
 
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get
-```
+**Summary:** Create Appointment
 
-```python
-import kittn
+**Description:** Create Appointment.
 
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get()
-```
+### HTTP Request 
+`***POST*** /api/appointment/create` 
 
-```shell
-curl "http://example.com/api/kittens"
-  -H "Authorization: meowmeowmeow"
-```
+**Parameters**
 
-```javascript
-const kittn = require('kittn');
+| Name | Located in | Description | Required | Type |
+| ---- | ---------- | ----------- | -------- | ---- |
+| appointmentMaintain | body | appointmentMaintain | Yes |  |
 
-let api = kittn.authorize('meowmeowmeow');
-let kittens = api.kittens.get();
-```
+**Responses**
 
-> The above command returns JSON structured like this:
+| Code | Description |
+| ---- | ----------- |
+| 200 | OK |
+| 201 | Created |
+| 401 | Unauthorized |
+| 403 | Forbidden |
+| 404 | Not Found |
 
-```json
-[
-  {
-    "id": 1,
-    "name": "Fluffums",
-    "breed": "calico",
-    "fluffiness": 6,
-    "cuteness": 7
-  },
-  {
-    "id": 2,
-    "name": "Max",
-    "breed": "unknown",
-    "fluffiness": 5,
-    "cuteness": 10
-  }
-]
-```
+# /API/APPOINTMENT/NOSHOW/{SYSTEM}/{SOURCEID}
+## ***GET*** 
 
-This endpoint retrieves all kittens.
+**Summary:** NoShow an Appointment
 
-### HTTP Request
+**Description:** NoShow Appointment via System Code and Source System Id.
 
-`GET http://example.com/api/kittens`
+### HTTP Request 
+`***GET*** /api/appointment/noshow/{system}/{sourceId}` 
 
-### Query Parameters
+**Parameters**
 
-Parameter | Default | Description
---------- | ------- | -----------
-include_cats | false | If set to true, the result will also include cats.
-available | true | If set to false, the result will include kittens that have already been adopted.
+| Name | Located in | Description | Required | Type |
+| ---- | ---------- | ----------- | -------- | ---- |
+| sourceId | path | sourceId | Yes | string |
+| system | path | system | Yes | string |
 
-<aside class="success">
-Remember — a happy kitten is an authenticated kitten!
-</aside>
+**Responses**
 
-## Get a Specific Kitten
+| Code | Description |
+| ---- | ----------- |
+| 200 | OK |
+| 401 | Unauthorized |
+| 403 | Forbidden |
+| 404 | Not Found |
 
-```ruby
-require 'kittn'
+# /API/APPOINTMENT/SEARCH
+## ***POST*** 
 
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get(2)
-```
+**Summary:** Get Appointments for patient by MRN or Digital Home Id.
 
-```python
-import kittn
+**Description:** Get Appointments for patient by MRN or Digital Home Id.
 
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get(2)
-```
+### HTTP Request 
+`***POST*** /api/appointment/search` 
 
-```shell
-curl "http://example.com/api/kittens/2"
-  -H "Authorization: meowmeowmeow"
-```
+**Parameters**
 
-```javascript
-const kittn = require('kittn');
+| Name | Located in | Description | Required | Type |
+| ---- | ---------- | ----------- | -------- | ---- |
+| appointmentSearchs | body | appointmentSearchs | Yes |  |
 
-let api = kittn.authorize('meowmeowmeow');
-let max = api.kittens.get(2);
-```
+**Responses**
 
-> The above command returns JSON structured like this:
+| Code | Description |
+| ---- | ----------- |
+| 200 | OK |
+| 201 | Created |
+| 401 | Unauthorized |
+| 403 | Forbidden |
+| 404 | Not Found |
 
-```json
-{
-  "id": 2,
-  "name": "Max",
-  "breed": "unknown",
-  "fluffiness": 5,
-  "cuteness": 10
-}
-```
+# /API/APPOINTMENT/TEST
+## ***GET*** 
 
-This endpoint retrieves a specific kitten.
+**Summary:** Load test url
 
-<aside class="warning">Inside HTML code blocks like this one, you can't use Markdown, so use <code>&lt;code&gt;</code> blocks to denote code.</aside>
+**Description:** Load test url
 
-### HTTP Request
+### HTTP Request 
+`***GET*** /api/appointment/test` 
 
-`GET http://example.com/kittens/<ID>`
+**Responses**
 
-### URL Parameters
+| Code | Description |
+| ---- | ----------- |
+| 200 | OK |
+| 401 | Unauthorized |
+| 403 | Forbidden |
+| 404 | Not Found |
 
-Parameter | Description
---------- | -----------
-ID | The ID of the kitten to retrieve
-
+<!-- Converted with the swagger-to-slate https://github.com/lavkumarv/swagger-to-slate -->
